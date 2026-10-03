@@ -22,7 +22,7 @@ Preparar uma oficina (workshop) de IA para iniciantes, com uma apresentação em
 | Caminho | O que é |
 |---|---|
 | `oficina-ia/programacao.md` | Programação em 10 blocos, com o 9 dividido em 9a e 9b (~3h25 com intervalo), com os pontos em aberto no fim. É a fonte de verdade do conteúdo. |
-| `oficina-ia/apresentacao/deck.json` | Ordem dos 45 slides, seções e fontes. |
+| `oficina-ia/apresentacao/deck.json` | Ordem dos 53 slides, seções e fontes. |
 | `oficina-ia/apresentacao/slides/*.html` | Um fragmento HTML por slide (`<section>` com notas do apresentador em `<aside>`). |
 | `oficina-ia/apresentacao/player/` | Player local que mostra esses slides sem o claude.ai e sem internet (fontes e ícones guardados no repositório). |
 | `oficina-ia/apresentacao/apresentar.sh` | Sobe um servidor local (servindo `oficina-ia/` inteira) e abre o player no navegador. |
@@ -37,14 +37,14 @@ Preparar uma oficina (workshop) de IA para iniciantes, com uma apresentação em
 
 - Rode `oficina-ia/apresentacao/apresentar.sh`: ele abre `http://127.0.0.1:8765/apresentacao/player/` (ou a próxima porta livre). Ctrl+C no terminal encerra. Sem o script: `python3 -m http.server` dentro de `oficina-ia/` e abrir `/apresentacao/player/`. Abrir o `index.html` direto do arquivo não funciona.
 - Atalhos: → / ← (ou passador de slides), número + Enter para pular, F tela cheia, N notas do apresentador (segunda janela, com cronômetro e próximo slide), B tela preta, S liga/desliga o som, R recarrega depois de editar um slide.
-- Som: `data-som="alerta"` na `<section>` toca uma sirene gerada pelo player (sem arquivo) ao chegar no slide; outro valor é tratado como arquivo de áudio relativo a `apresentacao/` (ex.: `data-som="sons/buzina.mp3"`). Usado em `alerta-perceptron` e `alerta-matematica`. O navegador só toca depois de um clique ou tecla na janela dos slides; o Artifact do claude.ai ignora o atributo.
+- Som: `data-som="alerta"` na `<section>` toca uma sirene gerada pelo player (sem arquivo) ao chegar no slide; outro valor é tratado como arquivo de áudio relativo a `apresentacao/` (ex.: `data-som="sons/buzina.mp3"`). Usado em `alerta-perceptron`, `alerta-matematica` e `alerta-atencao`. O navegador só toca depois de um clique ou tecla na janela dos slides; o Artifact do claude.ai ignora o atributo.
 - O player é nosso, não o motor do claude.ai: cobre o que os slides usam hoje (tela 1920×1080, estilos inline, `x-icon`, `x-shape`, transição fade, `<aside>`, `hidden`). Os ícones são do Phosphor (MIT), parecidos mas não idênticos aos do claude.ai. `x-connector`, `x-embed`, animações `data-build-*` e a transição `magic` não estão implementados. Se um slide novo usar um desses, conferir no player antes de apresentar.
 - Links (`<a href>`) nos slides são relativos à pasta `apresentacao/` e abrem em outra aba. Os slides `bolinhas-demo`, `mlp-demo`, `token-demo` e `llm-demo` usam isso para abrir os programas de `programas/` via `tela-cheia.html` (o navegador exige um toque na aba nova para entrar em tela cheia; Ctrl+W volta aos slides). Esses links só funcionam no player local: os programas não estão publicados no Artifact do claude.ai.
 - Para tirar um slide da apresentação (por exemplo `pendencias`), coloque `hidden` na `<section>`: o player pula.
 
 ## Ordem dos slides
 
-capa, publico, roteiro, abertura, funciona, alerta-perceptron, perceptron, sigmoide, backprop, dois-perceptrons, bolinhas-demo, mlp-demo, parametros, previsao, token, token-porque, alerta-matematica, embedding, token-demo, atencao-artigo, atencao-exemplo, atencao-conta, llm-demo, nuvem-fluxo, chatgpt-ao-vivo, nuvem-recursos, ia-imagem, ia-transcricao, ia-locucao, ia-visao, mapa, mapa-lista, mapa-maturidade, projetos, prompt, exercicio1, intervalo, exercicio2, video, agente, agente-processo, seguranca, agente-real, encerramento, pendencias.
+capa, publico, roteiro, abertura, funciona, alerta-perceptron, perceptron, sigmoide, backprop, dois-perceptrons, bolinhas-demo, mlp-demo, parametros, previsao, token, token-porque, alerta-matematica, embedding, token-demo, alerta-atencao, atencao-artigo, atencao-exemplo, atencao-conta, llm-demo, nuvem-fluxo, chatgpt-ao-vivo, nuvem-recursos, ia-imagem, ia-transcricao, ia-locucao, ia-visao, mapa, mapa-lista, mapa-maturidade, projetos, prompt, harness-o-que-e, harness-ferramentas, harness-mcp, contexto-janela, contexto-limites, harness-skills, harness-resumo, exercicio1, intervalo, exercicio2, video, agente, agente-processo, seguranca, agente-real, encerramento, pendencias.
 
 O último slide ("Bastidores", `pendencias`) é só para a equipe: esconder ou apagar antes de apresentar à turma.
 
@@ -57,7 +57,6 @@ O último slide ("Bastidores", `pendencias`) é só para a equipe: esconder ou a
 ## Pontos em aberto
 
 - **Duração total e formato:** quantas horas, presencial, quantas pessoas, se tem Wi-Fi. Os tempos da programação são estimativas.
-- **Simulador de prompt no celular:** ainda não existe. Definir o que compara (prompt "seco" × com contexto) e como a turma acessa (link ou QR code).
 - **Exemplo do faturamento (exercício 1):** conseguir o PDF real de um laboratório e anonimizar os dados.
 - **Link de afiliado do Claude:** decidir se usa no encerramento.
 - **Ferramenta de agente:** confirmar se é OpenClaw (na gravação aparece como "open call" e "opencloud").
@@ -65,14 +64,17 @@ O último slide ("Bastidores", `pendencias`) é só para a equipe: esconder ou a
 - **Números do Gartner:** achar fonte e ano dos 17% de empresas implantando agentes e dos 80% de falha (slide `agente-processo`).
 - **Vídeo com IA:** retestar as ferramentas com as dicas de prompt do Sérgio antes de fechar o bloco 8.
 
+- **Exercício de prompt (decidido em 2026-10-03):** sem simulador próprio. No slide `prompt`, a turma manda o prompt seco e o com contexto no ChatGPT do próprio celular e compara.
+
 ## Conteúdo sugerido pelo Claude (revisar)
 
 - A redação e o exemplo numérico dos slides `perceptron`, `sigmoide` e `backprop` (pesos 2, 1, −3 e viés 0,5; um passo de gradiente leva a previsão de 0,38 para 0,61) e do `dois-perceptrons` (h₁ "gostoso?" e h₂ "pesa no bolso?"; um passo de backprop leva de 0,69 para 0,78). Contas conferidas em Python.
 - O slide `token-porque` (letra × palavra × token com "empreendedora"; o número 4821 é ilustrativo).
-- Os slides `alerta-perceptron` e `alerta-matematica` (mesmo slide de descontração antes da conta, com sirene) e `embedding` (mapa 2D, cosseno bolo × torta ≈ 0,99 e bolo × carro ≈ 0,12, rei − homem + mulher ≈ rainha; números conferidos em Python). Os dois são opcionais: dá para pular direto para o `token-demo`.
+- Os slides `alerta-perceptron`, `alerta-matematica` e `alerta-atencao` (mesmo slide de descontração antes da conta, com sirene) e `embedding` (mapa 2D, cosseno bolo × torta ≈ 0,99 e bolo × carro ≈ 0,12, rei − homem + mulher ≈ rainha; números conferidos em Python). Os dois são opcionais: dá para pular direto para o `token-demo`.
 - Os slides de atenção: `atencao-artigo` ("Attention Is All You Need", Vaswani e outros, Google, NeurIPS 2017, arXiv 1706.03762; o título em português é tradução livre), `atencao-exemplo` ("a torta não coube na caixa porque ela era grande/pequena", porcentagens ilustrativas) e `atencao-conta` (fórmula do artigo com exemplo: pesos 57/20/14/10%, conferidos em Python; opcional).
 - Os slides `nuvem-fluxo` (caminho celular → internet → datacenter → GPUs e volta token por token), `chatgpt-ao-vivo` (roteiro no ChatGPT de verdade com o pedido dos nomes da loja de bolos; precisa de internet) e `nuvem-recursos` (hardware e software para rodar um ChatGPT, com os números de preço e energia: US$ 25–40 mil por GPU, mais de US$ 300 mil por servidor de 8, 700 W por GPU, 0,34 Wh por pergunta segundo a OpenAI em 2025). Preços e números de energia: conferir perto da data.
 - Os slides `ia-imagem`, `ia-transcricao`, `ia-locucao` e `ia-visao` (outros tipos de IA: esteira de 5 etapas com desenhos ilustrativos do bolo + cartões "como aprendeu", "no seu negócio" e "jogando a real"). Foram gerados por script; para mudar, edite os HTML direto.
+- A série do harness (`harness-o-que-e`, `harness-ferramentas`, `harness-mcp`, `contexto-janela`, `contexto-limites`, `harness-skills`, `harness-resumo`; a janela de contexto é "a mesa de trabalho", de 100 mil a 1 milhão de tokens nos modelos grandes, conferir perto da data): analogias do arreio, da tomada padrão, do caderno de receitas e da confeitaria; exemplo da previsão do tempo para a feira; nomes de skills no slide são exemplos. Datas: MCP criado pela Anthropic em 2024; skills lançadas no Claude em 2025.
 - O slide `parametros`: conta 5N + 1 da rede do bolo (4 → 21, 8 → 41, 64 → 321), a escala "1 segundo por parâmetro" e o "1 trilhão" dos modelos avançados, que é ordem de grandeza (as empresas não divulgam).
 - O programa `programas/bolinhas.html` e o slide `bolinhas-demo` (exemplo do bolo; se não servir, pôr `hidden` no slide).
 - O exemplo de prompt seco × com contexto (loja de bolos caseiros) no slide `prompt`.

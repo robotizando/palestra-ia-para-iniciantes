@@ -1,0 +1,36 @@
+<section id="contexto-janela" data-transition="fade" style="background:#FFF8EE; color:#1F2A44; font-family:'Nunito Sans', Arial, sans-serif; padding:96px 128px; display:flex; flex-direction:column; gap:36px">
+<div style="display:flex; flex-direction:column; gap:12px">
+<p style="font-size:28px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:2px">Bloco 5 · Por dentro do app (4 de 7)</p>
+<h2 style="font-family:'Fredoka', Arial, sans-serif; font-size:64px; font-weight:600; line-height:1.1; color:#1F2A44">Janela de contexto: a mesa de trabalho da IA</h2>
+</div>
+<div style="display:flex; flex-direction:column; gap:14px">
+<p style="font-size:24px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:1px">Tudo isso vai para o modelo a cada mensagem, e tem que caber</p>
+<div style="display:flex; flex-direction:row; height:120px; border:4px solid #1F2A44; border-radius:20px; overflow:hidden">
+<div style="width:13%; background:#1F2A44; display:flex; align-items:center; justify-content:center; padding:8px"><p style="font-size:21px; font-weight:800; color:#FFF8EE; text-align:center; line-height:1.2">instruções do app</p></div>
+<div style="width:15%; background:#5B7DB1; display:flex; align-items:center; justify-content:center; padding:8px"><p style="font-size:21px; font-weight:800; color:#FFF8EE; text-align:center; line-height:1.2">ferramentas e conectores</p></div>
+<div style="width:22%; background:#F28C28; display:flex; align-items:center; justify-content:center; padding:8px"><p style="font-size:21px; font-weight:800; color:#1F2A44; text-align:center; line-height:1.2">arquivos que você mandou</p></div>
+<div style="width:28%; background:#F7B26A; display:flex; align-items:center; justify-content:center; padding:8px"><p style="font-size:21px; font-weight:800; color:#1F2A44; text-align:center; line-height:1.2">a conversa inteira até aqui</p></div>
+<div style="width:9%; background:#FFEBD2; display:flex; align-items:center; justify-content:center; padding:8px"><p style="font-size:21px; font-weight:800; color:#1F2A44; text-align:center; line-height:1.2">nova mensagem</p></div>
+<div style="width:13%; background:repeating-linear-gradient(-45deg, #FFFDF9 0px, #FFFDF9 12px, #EFD9B8 12px, #EFD9B8 24px); display:flex; align-items:center; justify-content:center; padding:8px"><p style="font-size:21px; font-weight:800; color:#9A4508; text-align:center; line-height:1.2">espaço para a resposta</p></div>
+</div>
+<p style="font-size:22px; color:#4A5568">Proporções ilustrativas. O tamanho da janela é medido em tokens.</p>
+</div>
+<div style="display:flex; flex-direction:row; gap:24px">
+<div style="flex:1; display:flex; flex-direction:column; gap:10px; background:#1F2A44; border-radius:24px; padding:28px 32px">
+<x-icon name="Lightbulb" style="color:#F28C28; width:48px; height:48px"></x-icon>
+<p style="font-size:24px; font-weight:800; color:#F28C28; text-transform:uppercase; letter-spacing:1px">O modelo não tem memória</p>
+<p style="font-size:27px; line-height:1.4; color:#D9DEE8">A cada mensagem, o app manda tudo de novo. O que está na janela é tudo o que a IA “vê”.</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:10px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px; padding:28px 32px">
+<x-icon name="Book" style="color:#F28C28; width:48px; height:48px"></x-icon>
+<p style="font-size:24px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:1px">Quanto cabe</p>
+<p style="font-size:27px; line-height:1.4; color:#4A5568">De 100 mil a 1 milhão de tokens nos modelos grandes: de um livro grosso a vários. Na conta grátis, costuma ser menos.</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:10px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px; padding:28px 32px">
+<x-icon name="Chat" style="color:#F28C28; width:48px; height:48px"></x-icon>
+<p style="font-size:24px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:1px">Parece memória, mas é a mesa</p>
+<p style="font-size:27px; line-height:1.4; color:#4A5568">Quando a IA “lembra” do que você disse, é porque o app recolocou na mesa.</p>
+</div>
+</div>
+<aside>A janela de contexto é a mesa de trabalho da IA: tudo o que ela consegue olhar de uma vez. O modelo não guarda nada entre uma mensagem e outra. A cada mensagem, o app (o harness que acabamos de ver) monta de novo o pacote inteiro: as instruções escondidas da empresa, a lista de ferramentas e conectores (cada um com sua descrição), os arquivos que você mandou, a conversa inteira até ali e a mensagem nova. E ainda precisa sobrar espaço para a resposta. Tudo isso é medido em tokens. Os modelos grandes de hoje aceitam algo entre 100 mil e 1 milhão de tokens, o que vai de um livro grosso a vários livros; na conta grátis o limite costuma ser menor (conferir perto da data, muda rápido). Quando parece que a IA "lembra" de você, é porque o app recolocou aquilo na mesa: o recurso de memória do ChatGPT, por exemplo, guarda anotações e as cola de volta na janela. As proporções da barra são ilustrativas.</aside>
+</section>

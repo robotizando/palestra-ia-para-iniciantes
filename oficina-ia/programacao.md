@@ -19,7 +19,7 @@
 | 2 | Como a IA funciona, sem matemática | 20 min | Explicação lúdica |
 | 3 | O que é token e por que isso custa dinheiro | 10 min | Explicação + exemplo |
 | 4 | Mapa das IAs: qual serve para quê | 15 min | Lista comentada |
-| 5 | Prompt que funciona: projetos no Claude | 20 min | Demonstração + simulador no celular |
+| 5 | Prompt que funciona: projetos no Claude | 20 min | Demonstração + exercício no celular |
 | 6 | Exercício 1: de PDF ou foto para planilha | 20 min | Demonstração junto com a turma |
 | — | Intervalo | 15 min | |
 | 7 | Exercício 2: um card de Instagram para o seu negócio | 30 min | Mão na massa, no celular de cada um |
@@ -53,7 +53,7 @@
 - **Por que pedacinhos?** (slide `token-porque`): a rede só faz conta com números, então o texto vira lista de números. Letra por letra deixa o texto enorme; palavra inteira exigiria um dicionário infinito; tokens são o meio-termo (uns 100 mil pedaços que formam qualquer palavra). Português costuma gastar mais tokens que inglês.
 - **Opcional, para esticar** (slides `alerta-matematica` e `embedding`): um aviso de brincadeira antes da conta e, depois, o embedding. Cada token vira uma lista de números aprendida no treino, palavras parecidas ficam perto (cosseno) e rei − homem + mulher ≈ rainha.
 - **Demonstração ao vivo** (slide `token-demo`): o programa do Daniel `programas/tokens_visualizer.html` mostra o texto sendo cortado em tokens. A divisão é simulada (parecida com a do GPT-4), não é a oficial.
-- **Atenção** (slides `atencao-artigo`, `atencao-exemplo` e `atencao-conta`): o artigo "Attention Is All You Need" ("tudo que você precisa é atenção", Google, 2017), que criou o Transformer, o "T" do GPT. Exemplo "a torta não coube na caixa porque ela era grande/pequena": a atenção descobre quem é "ela". O terceiro slide traz a fórmula do artigo com números e é opcional.
+- **Atenção** (slides `alerta-atencao`, com sirene, e depois `atencao-artigo`, `atencao-exemplo` e `atencao-conta`): o artigo "Attention Is All You Need" ("tudo que você precisa é atenção", Google, 2017), que criou o Transformer, o "T" do GPT. Exemplo "a torta não coube na caixa porque ela era grande/pequena": a atenção descobre quem é "ela". O terceiro slide traz a fórmula do artigo com números e é opcional.
 - **Demonstração ao vivo** (slide `llm-demo`): o programa do Daniel `programas/llm_visualizer.html` gera texto token por token, mostra a atenção e as probabilidades da próxima palavra, com controle de temperatura.
 - **A LLM de verdade** (slides `nuvem-fluxo`, `chatgpt-ao-vivo` e `nuvem-recursos`): o caminho da pergunta do celular até o datacenter e a volta token por token; ida ao navegador para usar o ChatGPT (pedir 3 nomes para uma loja de bolos, reparar nos pedacinhos, pedir de novo e ver a resposta mudar); e o que é preciso para rodar um ChatGPT (GPUs, servidores, energia, software), com o gancho do custo dos equipamentos e da energia: por isso a conta grátis tem limite.
 
@@ -81,7 +81,15 @@ Três slides: uma porta de entrada curta, o mapa completo e a leitura de maturid
 ## 5. Prompt que funciona: projetos no Claude (20 min)
 - Todo mundo já usou o ChatGPT; aqui apresentamos o Claude.
 - Mostrar o recurso de **Projetos**: dar contexto, escrever instruções e só depois fazer o pedido. É mais completo do que o que a maioria faz.
-- **Interação:** simulador rodando no celular dos participantes, comparando um prompt "seco" com um prompt com contexto, para verem a diferença na resposta.
+- **Interação:** cada participante manda no próprio celular, no ChatGPT, primeiro o prompt "seco" e depois, numa conversa nova, o prompt com contexto, para comparar as respostas (decidido em 2026-10-03: sem simulador próprio).
+- **Por dentro do app: o harness** (slides `harness-o-que-e`, `harness-ferramentas`, `harness-mcp`, `contexto-janela`, `contexto-limites`, `harness-skills` e `harness-resumo`), para leigos:
+  - O modelo só recebe e devolve texto; o app (harness, "arreio") junta mensagem, conversa, instruções escondidas, arquivos, ferramentas e regras e manda tudo ao modelo.
+  - Chamada de ferramenta: o modelo só escreve um pedido ("use a previsão do tempo para sábado"); quem executa, e decide se pode, é o app.
+  - MCP: a tomada padrão para ligar serviços (agenda, planilha, sistema da loja) em qualquer IA. Cada conector é uma chave da sua casa.
+  - Janela de contexto: a mesa de trabalho da IA. O modelo não tem memória; a cada mensagem o app reenvia tudo, e tem que caber (de 100 mil a 1 milhão de tokens nos modelos grandes). Limites: quando enche, esquece o começo; o meio de textos longos fica "borrado"; conversa longa é mais lenta e gasta o limite. Dicas: assunto novo, conversa nova; levar um resumo; mandar só o trecho que importa; instrução fixa no Projeto.
+  - Skills: o caderno de receitas; o modelo vê só a capa e abre a receita quando o pedido combina.
+  - Resumo da confeitaria (cérebro, confeitaria, forno, tomada, receitas) e gancho para os agentes: o app repetindo o ciclo sozinho.
+  - Os tempos do bloco 5 precisam ser revistos com esses 7 slides.
 
 ## 6. Exercício 1: de PDF ou foto para planilha (20 min)
 - Exemplo real, com os dados anonimizados: faturamento de um laboratório em PDF ou imagem.
@@ -129,7 +137,6 @@ Três slides: uma porta de entrada curta, o mapa completo e a leitura de maturid
 ## Pontos em aberto
 - **Duração total e formato:** quantas horas, presencial, quantas pessoas e se tem Wi-Fi no local. No áudio para a Eliane, a referência foi uma oficina de 4 horas.
 - **Números do Gartner (bloco 9a):** achar a fonte e o ano dos 17% de empresas implantando agentes e dos 80% de falha antes de colocar no slide.
-- **Simulador de prompt no celular:** definir o que ele compara e como a turma acessa (link ou QR code).
 - **Exemplo do faturamento:** conseguir o PDF real e anonimizar os dados.
 - **Link de afiliado do Claude:** na conversa ficou a dúvida se vale usar; decidir.
 - **Nome da ferramenta de agente:** confirmar se é OpenClaw (na gravação aparece como "open call" e "opencloud").
