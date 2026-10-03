@@ -132,6 +132,7 @@ Três slides: uma porta de entrada curta, o mapa completo e a leitura de maturid
 ## 9b. Agentes e IA local na prática (20 min)
 - **Demonstração de IA local:** a IA rodando na máquina, sem internet. Mostrar o que ela exige (placa de vídeo e memória específicas), por isso a maioria contrata serviço em nuvem.
 - **Demonstração do agente** (OpenClaw): o conector liga em qualquer IA, até na local.
+- **A stack da demonstração** (slide `agente-stack`): notebook Core i7 de última geração, GPU RTX 4060 (8 GB), modelo Bonsai 27B rodando local e OpenClaw usando esse Bonsai. Tudo numa máquina só, sem internet e sem crédito de API; em troca, é mais lento, tem janela de contexto menor e o notebook custa caro.
 - Custos na prática:
   - A conta normal do Claude ou do ChatGPT não serve para agente; é preciso pagar a API e colocar créditos.
   - Se o agente não for bem configurado, ele sai gastando créditos à toa, por exemplo ficando vendo posts na internet.

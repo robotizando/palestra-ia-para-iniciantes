@@ -1,0 +1,48 @@
+<section id="agente-stack" data-transition="fade" style="background:#FFF8EE; color:#1F2A44; font-family:'Nunito Sans', Arial, sans-serif; padding:96px 128px; display:flex; flex-direction:column; gap:32px">
+<div style="display:flex; flex-direction:column; gap:12px">
+<p style="font-size:28px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:2px">Bloco 9b · O que está rodando aqui</p>
+<h2 style="font-family:'Fredoka', Arial, sans-serif; font-size:64px; font-weight:600; line-height:1.1; color:#1F2A44">A nossa demonstração, camada por camada</h2>
+</div>
+<div style="display:flex; flex-direction:row; align-items:center; gap:56px">
+<div style="flex:none; width:880px; display:flex; flex-direction:column; align-items:center; gap:14px">
+<div style="width:640px; display:flex; flex-direction:row; align-items:center; gap:24px; background:#F28C28; border-radius:24px; padding:22px 32px">
+<x-icon name="Link" style="color:#1F2A44; width:60px; height:60px; flex:none"></x-icon>
+<div style="display:flex; flex-direction:column; gap:2px">
+<p style="font-size:20px; font-weight:800; color:#1F2A44; text-transform:uppercase; letter-spacing:2px">O agente</p>
+<p style="font-family:'Fredoka', Arial, sans-serif; font-size:40px; font-weight:600; line-height:1.1; color:#1F2A44">OpenClaw</p>
+<p style="font-size:24px; line-height:1.3; color:#1F2A44">recebe o pedido e usa o Bonsai para decidir</p>
+</div>
+</div>
+<div style="width:720px; display:flex; flex-direction:row; align-items:center; gap:24px; background:#1F2A44; border-radius:24px; padding:22px 32px">
+<x-icon name="Lightbulb" style="color:#F28C28; width:60px; height:60px; flex:none"></x-icon>
+<div style="display:flex; flex-direction:column; gap:2px">
+<p style="font-size:20px; font-weight:800; color:#F28C28; text-transform:uppercase; letter-spacing:2px">O modelo (a LLM local)</p>
+<p style="font-family:'Fredoka', Arial, sans-serif; font-size:40px; font-weight:600; line-height:1.1; color:#FFF8EE">Bonsai 27B</p>
+<p style="font-size:24px; line-height:1.3; color:#D9DEE8">27 bilhões de parâmetros em cerca de 6 GB</p>
+</div>
+</div>
+<div style="width:800px; display:flex; flex-direction:row; align-items:center; gap:24px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px; padding:22px 32px">
+<x-icon name="Lightning" style="color:#F28C28; width:60px; height:60px; flex:none"></x-icon>
+<div style="display:flex; flex-direction:column; gap:2px">
+<p style="font-size:20px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:2px">A placa de vídeo (GPU)</p>
+<p style="font-family:'Fredoka', Arial, sans-serif; font-size:40px; font-weight:600; line-height:1.1; color:#1F2A44">RTX 4060</p>
+<p style="font-size:24px; line-height:1.3; color:#4A5568">8 GB de memória de vídeo: é ela que faz as contas</p>
+</div>
+</div>
+<div style="width:880px; display:flex; flex-direction:row; align-items:center; gap:24px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px; padding:22px 32px">
+<x-icon name="Settings" style="color:#F28C28; width:60px; height:60px; flex:none"></x-icon>
+<div style="display:flex; flex-direction:column; gap:2px">
+<p style="font-size:20px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:2px">A máquina</p>
+<p style="font-family:'Fredoka', Arial, sans-serif; font-size:40px; font-weight:600; line-height:1.1; color:#1F2A44">Notebook Core i7</p>
+<p style="font-size:24px; line-height:1.3; color:#4A5568">de última geração, onde tudo isso está instalado</p>
+</div>
+</div>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:20px">
+<div style="display:flex; flex-direction:column; gap:8px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px; padding:26px 30px"><p style="font-family:'Fredoka', Arial, sans-serif; font-size:32px; font-weight:600; color:#9A4508">Tudo numa máquina só</p><p style="font-size:26px; line-height:1.35; color:#4A5568">Nada sai do notebook: sem internet, sem API e sem gastar crédito.</p></div>
+<div style="display:flex; flex-direction:column; gap:8px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px; padding:26px 30px"><p style="font-family:'Fredoka', Arial, sans-serif; font-size:32px; font-weight:600; color:#9A4508">Por que cabe</p><p style="font-size:26px; line-height:1.35; color:#4A5568">O Bonsai é um modelo grande “espremido” para caber nos 8 GB da placa.</p></div>
+<div style="display:flex; flex-direction:column; gap:8px; background:#1F2A44; border-radius:24px; padding:26px 30px"><p style="font-family:'Fredoka', Arial, sans-serif; font-size:32px; font-weight:600; color:#F28C28">Jogando a real</p><p style="font-size:26px; line-height:1.35; color:#D9DEE8">É mais lento e tem a mesa de trabalho menor que as IAs da nuvem. E um notebook desses custa caro.</p></div>
+</div>
+</div>
+<aside>A stack da demonstração, de baixo para cima, como um bolo em camadas. A máquina: um notebook com processador Intel Core i7 de última geração. A placa de vídeo: uma RTX 4060, com 8 GB de memória de vídeo; é ela que faz as contas do modelo, como as GPUs do datacenter que vimos, só que uma só e bem menor. O modelo: Bonsai 27B (nome completo Bonsai 2 27B, da PrismML, lançado em setembro de 2026, de uso livre), uma versão “espremida” de um modelo de 27 bilhões de parâmetros, o Qwen 3.8 27B, da Alibaba. Lembrar do slide dos parâmetros: cada peso foi reduzido a três valores possíveis (pesos ternários), e por isso o arquivo tem cerca de 6 GB e cabe inteiro nos 8 GB da placa. O agente: o OpenClaw, que em vez de chamar uma IA da nuvem conversa com o Bonsai que está rodando no próprio notebook. Vantagem: nada sai da máquina, funciona sem internet e não gasta crédito de API. Jogando a real: é mais lento e menos capaz do que os modelos grandes da nuvem; com 8 GB sobra pouco espaço para a janela de contexto (de 16 mil a 64 mil tokens, conforme a configuração, contra centenas de milhares na nuvem), e um agente gasta contexto rápido; e o notebook com essa placa custa caro, não é o celular da turma. Testar o conjunto antes da oficina.</aside>
+</section>
