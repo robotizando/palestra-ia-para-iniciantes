@@ -44,6 +44,7 @@
 - A matemática aparece só de passagem, no máximo uma imagem, e segue em frente.
 - **Demonstração ao vivo** (slides `bolinhas-demo` e `mlp-demo`): primeiro uma versão de bolso sem contas (`programas/bolinhas.html`, "esse bolo vai vender bem?"), depois o simulador do Daniel (`programas/mlp_visualizer.html`). Mostrar que no começo a rede chuta e, com exemplos, acerta.
 - **Questão de tamanho** (slide `parametros`, depois das demonstrações): tabela de parâmetros da rede do bolo com 4, 8 e 64 bolinhas no meio (21, 41 e 321), uma IA média de 27 bilhões e os modelos avançados na casa de 1 trilhão.
+- **Vídeo da rede em 3D** (slide `rede-video`, logo depois): `exemplos/neuralnet.mp4` (2 min 45 s, do cybercontrols.org) mostra redes de verdade lendo números escritos à mão; cada ponto é uma bolinha e cada fio é um parâmetro. O recado é o tamanho: milhões de fios, e só 2% desenhados. Só no player local.
 - Mensagem central: a IA prevê a próxima palavra com base em muitos exemplos. Não "pensa" como gente.
 
 ## 3. O que é token e por que isso custa dinheiro (10 min)
