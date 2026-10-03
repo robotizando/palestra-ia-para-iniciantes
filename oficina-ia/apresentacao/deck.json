@@ -1,1 +1,117 @@
-{"v":4,"createdOnFiles":{"v":1,"at":"2026-09-29T00:12:00Z"},"title":"Oficina de IA","order":["capa","publico","roteiro","abertura","funciona","alerta-perceptron","perceptron","sigmoide","backprop","dois-perceptrons","bolinhas-demo","mlp-demo","parametros","previsao","token","token-porque","alerta-matematica","embedding","token-demo","alerta-atencao","atencao-artigo","atencao-exemplo","atencao-conta","llm-demo","nuvem-fluxo","chatgpt-ao-vivo","nuvem-recursos","ia-imagem","ia-transcricao","ia-locucao","ia-visao","mapa","mapa-lista","mapa-maturidade","projetos","prompt","harness-o-que-e","harness-ferramentas","harness-mcp","contexto-janela","contexto-limites","harness-skills","harness-resumo","exercicio1","intervalo","exercicio2","video","agente","agente-processo","seguranca","agente-real","encerramento","pendencias"],"sections":{"s1":{"description":"Para quem é a oficina e como ela está organizada","start":"capa"},"s2":{"description":"Como a IA funciona: a versão sem matemática, a matemática por trás (perceptron, sigmoide, backprop) e o que é token","start":"funciona"},"s3":{"description":"Outros tipos de IA (imagem, transcrição, locução, visão), qual IA usar para quê e como escrever um prompt que funciona","start":"ia-imagem"},"s4":{"description":"Mão na massa no celular: planilha e card de Instagram","start":"exercicio1"},"s5":{"description":"Papo reto sobre vídeo, agentes (alfabetização, não construção) e IA local","start":"video"},"s6":{"description":"Encerramento e o que ainda falta definir","start":"encerramento"}},"faces":{"fredoka":{"family":"Fredoka","href":"https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&display=swap"},"nunito-sans":{"family":"Nunito Sans","href":"https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400..800&display=swap"}},"designSystems":[]}
+{
+    "v": 4,
+    "createdOnFiles": {
+        "v": 1,
+        "at": "2026-09-29T00:12:00Z"
+    },
+    "title": "Oficina de IA",
+    "order": [
+        "capa",
+        "publico",
+        "roteiro",
+        "abertura",
+        "funciona",
+        "alerta-perceptron",
+        "perceptron",
+        "sigmoide",
+        "backprop",
+        "dois-perceptrons",
+        "bolinhas-demo",
+        "mlp-demo",
+        "parametros",
+        "previsao",
+        "token",
+        "token-porque",
+        "alerta-matematica",
+        "embedding",
+        "token-demo",
+        "alerta-atencao",
+        "atencao-artigo",
+        "atencao-exemplo",
+        "atencao-conta",
+        "llm-demo",
+        "nuvem-fluxo",
+        "chatgpt-ao-vivo",
+        "ideias",
+        "ideia-atendimento",
+        "ideia-divulgacao",
+        "ideia-contas",
+        "ideia-documentos",
+        "nuvem-recursos",
+        "ia-imagem",
+        "ia-transcricao",
+        "ia-locucao",
+        "ia-visao",
+        "mapa",
+        "mapa-lista",
+        "mapa-maturidade",
+        "projetos",
+        "prompt",
+        "harness-o-que-e",
+        "harness-ferramentas",
+        "harness-mcp",
+        "harness-oportunidade",
+        "harness-negocios",
+        "contexto-janela",
+        "contexto-limites",
+        "harness-skills",
+        "harness-resumo",
+        "exercicio1",
+        "exercicio1-faturas",
+        "intervalo",
+        "exercicio2",
+        "imagem-custo",
+        "video",
+        "video-desafio",
+        "video-prompt",
+        "video-exemplos",
+        "video-evolucao",
+        "video-evolucao-player",
+        "agente",
+        "agente-familias",
+        "agente-n8n",
+        "agente-openclaw",
+        "agente-processo",
+        "seguranca",
+        "agente-real",
+        "encerramento",
+        "obrigado"
+    ],
+    "sections": {
+        "s1": {
+            "description": "Para quem é a oficina e como ela está organizada",
+            "start": "capa"
+        },
+        "s2": {
+            "description": "Como a IA funciona: a versão sem matemática, a matemática por trás (perceptron, sigmoide, backprop) e o que é token",
+            "start": "funciona"
+        },
+        "s3": {
+            "description": "Outros tipos de IA (imagem, transcrição, locução, visão), qual IA usar para quê e como escrever um prompt que funciona",
+            "start": "ia-imagem"
+        },
+        "s4": {
+            "description": "Mão na massa no celular: planilha e card de Instagram",
+            "start": "exercicio1"
+        },
+        "s5": {
+            "description": "Papo reto sobre vídeo, agentes (alfabetização, não construção) e IA local",
+            "start": "imagem-custo"
+        },
+        "s6": {
+            "description": "Encerramento, dúvidas e próximos passos",
+            "start": "encerramento"
+        }
+    },
+    "faces": {
+        "fredoka": {
+            "family": "Fredoka",
+            "href": "https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&display=swap"
+        },
+        "nunito-sans": {
+            "family": "Nunito Sans",
+            "href": "https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400..800&display=swap"
+        }
+    },
+    "designSystems": []
+}

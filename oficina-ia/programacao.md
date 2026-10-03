@@ -56,6 +56,7 @@
 - **Atenção** (slides `alerta-atencao`, com sirene, e depois `atencao-artigo`, `atencao-exemplo` e `atencao-conta`): o artigo "Attention Is All You Need" ("tudo que você precisa é atenção", Google, 2017), que criou o Transformer, o "T" do GPT. Exemplo "a torta não coube na caixa porque ela era grande/pequena": a atenção descobre quem é "ela". O terceiro slide traz a fórmula do artigo com números e é opcional.
 - **Demonstração ao vivo** (slide `llm-demo`): o programa do Daniel `programas/llm_visualizer.html` gera texto token por token, mostra a atenção e as probabilidades da próxima palavra, com controle de temperatura.
 - **A LLM de verdade** (slides `nuvem-fluxo`, `chatgpt-ao-vivo` e `nuvem-recursos`): o caminho da pergunta do celular até o datacenter e a volta token por token; ida ao navegador para usar o ChatGPT (pedir 3 nomes para uma loja de bolos, reparar nos pedacinhos, pedir de novo e ver a resposta mudar); e o que é preciso para rodar um ChatGPT (GPUs, servidores, energia, software), com o gancho do custo dos equipamentos e da energia: por isso a conta grátis tem limite.
+- **E no meu negócio?** (slides `ideias`, `ideia-atendimento`, `ideia-divulgacao`, `ideia-contas` e `ideia-documentos`, logo depois do ChatGPT ao vivo): quatro ideias de uso do ChatGPT ou do Claude para negócio pequeno e vida pessoal, cada uma com um exemplo de pedido no celular, dicas de como pedir e um aviso "jogando a real": responder cliente (ler antes de mandar), ter ideia de post (reescrever do seu jeito), organizar contas e preço (conferir na calculadora) e entender papel difícil (não substitui contador nem advogado; cobrir dado sensível).
 
 ## 4. Mapa das IAs: qual serve para quê (15 min)
 - **Antes do mapa, outros tipos de IA** (slides `ia-imagem`, `ia-transcricao`, `ia-locucao` e `ia-visao`), cada um com o caminho do que entra até o que sai, como aprendeu, uso no negócio e "jogando a real":
@@ -86,6 +87,7 @@ Três slides: uma porta de entrada curta, o mapa completo e a leitura de maturid
   - O modelo só recebe e devolve texto; o app (harness, "arreio") junta mensagem, conversa, instruções escondidas, arquivos, ferramentas e regras e manda tudo ao modelo.
   - Chamada de ferramenta: o modelo só escreve um pedido ("use a previsão do tempo para sábado"); quem executa, e decide se pode, é o app.
   - MCP: a tomada padrão para ligar serviços (agenda, planilha, sistema da loja) em qualquer IA. Cada conector é uma chave da sua casa.
+  - Oportunidades de negócio (slides `harness-oportunidade` e `harness-negocios`, logo depois do MCP): o modelo é alugado e igual para todo mundo; o negócio está no arreio, que é o que só você sabe (preços, regras, jeito de atender) mais as ferramentas ligadas. Quatro oportunidades: ligar a IA no que você já usa, empacotar o que você sabe num Projeto, arrumar a IA dos negócios do bairro e apostar no seu ofício. Jogando a real: não é dinheiro fácil, conector costuma pedir plano pago e sem processo organizado não funciona.
   - Janela de contexto: a mesa de trabalho da IA. O modelo não tem memória; a cada mensagem o app reenvia tudo, e tem que caber (de 100 mil a 1 milhão de tokens nos modelos grandes). Limites: quando enche, esquece o começo; o meio de textos longos fica "borrado"; conversa longa é mais lenta e gasta o limite. Dicas: assunto novo, conversa nova; levar um resumo; mandar só o trecho que importa; instrução fixa no Projeto.
   - Skills: o caderno de receitas; o modelo vê só a capa e abre a receita quando o pedido combina.
   - Resumo da confeitaria (cérebro, confeitaria, forno, tomada, receitas) e gancho para os agentes: o app repetindo o ciclo sozinho.
@@ -95,6 +97,8 @@ Três slides: uma porta de entrada curta, o mapa completo e a leitura de maturid
 - Exemplo real, com os dados anonimizados: faturamento de um laboratório em PDF ou imagem.
 - Pedir ao Claude para transformar em planilha de controle de entrada e saída.
 - Feito ao vivo, junto com a turma. É simples e tem a ver com negócio.
+- Enquanto o PDF real não chega, usar o fictício `exemplos/faturamento-laboratorio.pdf`.
+- **Segundo exemplo** (slide `exercicio1-faturas`): `exemplos/faturas-clientes.pdf`, 25 páginas, uma fatura de cliente fictício por página. Pedir uma planilha com os dados de todas as páginas em forma de lista. O tempo do bloco precisa ser revisto com os dois exemplos.
 
 ## 7. Exercício 2: um card de Instagram para o seu negócio (30 min)
 - Todo mundo pega o celular e cria um card para postar sobre o próprio negócio (ou outro assunto que quiser).
@@ -104,13 +108,19 @@ Três slides: uma porta de entrada curta, o mapa completo e a leitura de maturid
 - Fechamento: algumas pessoas mostram o card que fizeram.
 
 ## 8. Papo reto sobre vídeo com IA (15 min)
+- **Antes, por que imagem gasta** (slide `imagem-custo`): uma imagem são uns 3 milhões de números, a IA repassa a imagem inteira de 20 a 50 vezes e a GPU fica ocupada só nisso. Por isso a conta grátis libera poucas imagens.
 - **O que dá para fazer:** vídeo animado, com a voz gerada numa ferramenta e a animação em outra.
 - **O que é difícil:** vídeo com pessoa real, avatar ou trocar o próprio rosto. Nesse nível, contrate um profissional ou estude a área a sério (indicar cursos e leituras).
 - Vídeo ainda está em desenvolvimento para o grande público, é caro e consome muito token.
+- **Por que vídeo é um desafio** (slide `video-desafio`, depois do `video`): são 24 imagens por segundo que precisam combinar entre si (rosto, roupa, cenário), a IA não conhece as regras do mundo e a conta multiplica; por isso os clipes são curtos e caros.
+- **Prompt e contexto são tudo** (slide `video-prompt`): exemplo de prompt bom de vídeo, com diretriz de consistência do rosto, cena, câmera, ator, movimentos segundo a segundo e texto falado. O que não for dito, a IA inventa diferente a cada quadro.
+- **Vendo na prática** (slide `video-exemplos`): tocar os dois vídeos de exemplo (`exemplos/exemplo-video1.mp4`, 10 s, e `exemplo-video2.mp4`, 30 s) e perguntar à turma o que ficou bom e o que entrega que é IA. Só no player local.
+- **A evolução em 3 anos** (slides `video-evolucao` e `video-evolucao-player`): o teste do Will Smith comendo macarrão, de 2023 (rosto derretendo) até hoje (quase real, com som), e depois o vídeo `exemplos/AIprogression.mp4` (1 min 9 s, só no player local). Gancho: o que hoje é difícil pode não ser amanhã, e desconfiar de vídeo também é alfabetização.
 - Material de apoio: coletar as dicas de prompt de vídeo da conversa com o Sérgio e testar de novo antes da oficina, porque a tecnologia mudou.
 
 ## 9a. Agentes de IA: o que ninguém conta (20 min)
 - O que é um agente: basicamente **um agendador turbinado**, que recebe uma tarefa e toma decisões sozinho.
+- **Como é um agente por fora** (três slides com telas desenhadas, logo depois da definição): as três caras do agente (caixinhas ligadas: n8n, Make, Zapier; assistente por mensagem: OpenClaw; agente dentro do chat: ChatGPT, Claude, Manus), o **n8n** de perto (fluxo da loja de bolos: mensagem no WhatsApp → agente de IA → responde o cliente e anota na planilha, com modelo, memória e ferramentas pendurados) e o **OpenClaw** de perto (você pede pelo celular, ele age no computador de casa e consulta uma LLM). Por baixo é sempre LLM + ferramentas + repetição.
 - **Pico da expectativa, longe da maturidade.** Tem muita gente vendendo curso de agente e vendendo agente como solução final e oportunidade de ganhar dinheiro. Já vimos esse filme com blockchain e Bitcoin: toda tecnologia nova vira curso e artigo antes de passar no teste de mercado.
 - **Números do Gartner** (conferir a fonte antes de usar): só 17% das empresas estão implantando agentes, e 80% das implantações falham, o dobro de quando não se usa agente.
 - **Sem processo definido, o agente não serve para nada.** Ele amplifica processos e competências que já funcionam; não conserta processo bagunçado. E precisa de alguém (uma equipe) que traduza o processo para a ferramenta.
@@ -121,7 +131,7 @@ Três slides: uma porta de entrada curta, o mapa completo e a leitura de maturid
 
 ## 9b. Agentes e IA local na prática (20 min)
 - **Demonstração de IA local:** a IA rodando na máquina, sem internet. Mostrar o que ela exige (placa de vídeo e memória específicas), por isso a maioria contrata serviço em nuvem.
-- **Demonstração do agente** (OpenClaw, nome a confirmar): o conector liga em qualquer IA, até na local.
+- **Demonstração do agente** (OpenClaw): o conector liga em qualquer IA, até na local.
 - Custos na prática:
   - A conta normal do Claude ou do ChatGPT não serve para agente; é preciso pagar a API e colocar créditos.
   - Se o agente não for bem configurado, ele sai gastando créditos à toa, por exemplo ficando vendo posts na internet.
@@ -129,8 +139,8 @@ Três slides: uma porta de entrada curta, o mapa completo e a leitura de maturid
 ## 10. Encerramento, dúvidas e próximos passos (10 min)
 - Resumo em três frases: como a IA funciona, qual ferramenta usar para quê e o que é exagero.
 - **Se quiser trabalhar com agentes, o caminho seguro:** estudar; definir (e escrever) os seus processos primeiro; observar as ferramentas antes de pagar por elas; analisar casos reais, onde o agente se aplica e onde não se aplica.
-- Link para assinar o Claude (ver pontos em aberto).
 - Perguntas.
+- Slide final de agradecimento: contato do Daniel (daniel@iapuru.com.br) e QR code do repositório no GitHub com todo o material.
 
 ---
 
@@ -138,6 +148,4 @@ Três slides: uma porta de entrada curta, o mapa completo e a leitura de maturid
 - **Duração total e formato:** quantas horas, presencial, quantas pessoas e se tem Wi-Fi no local. No áudio para a Eliane, a referência foi uma oficina de 4 horas.
 - **Números do Gartner (bloco 9a):** achar a fonte e o ano dos 17% de empresas implantando agentes e dos 80% de falha antes de colocar no slide.
 - **Exemplo do faturamento:** conseguir o PDF real e anonimizar os dados.
-- **Link de afiliado do Claude:** na conversa ficou a dúvida se vale usar; decidir.
-- **Nome da ferramenta de agente:** confirmar se é OpenClaw (na gravação aparece como "open call" e "opencloud").
 - **Vídeo com IA:** retestar as ferramentas com as dicas do Sérgio antes de fechar o bloco 8.

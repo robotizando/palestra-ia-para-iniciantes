@@ -43,8 +43,8 @@
       if (!secao) return console.warn('Slide sem <section>:', deck.order[i]);
       if (!secao.id) secao.id = deck.order[i];
       if (secao.hasAttribute('hidden')) return; // slide escondido: não entra na apresentação
-      // Imagens ficam ao lado do deck, não do player.
-      secao.querySelectorAll('img[src]').forEach((img) => {
+      // Imagens e vídeos ficam ao lado do deck, não do player.
+      secao.querySelectorAll('img[src], video[src], source[src]').forEach((img) => {
         const src = img.getAttribute('src');
         if (!/^(https?:|data:|\/)/.test(src)) img.setAttribute('src', BASE + src);
       });
@@ -128,7 +128,10 @@
       ajustar,
       mostrar(i, animar) {
         tela.classList.toggle('sem-animacao', !animar);
-        if (atual >= 0 && tela.children[atual]) tela.children[atual].classList.remove('atual');
+        if (atual >= 0 && tela.children[atual]) {
+          tela.children[atual].classList.remove('atual');
+          tela.children[atual].querySelectorAll('video').forEach((v) => v.pause()); // saiu do slide: para o vídeo
+        }
         atual = i;
         if (tela.children[i]) tela.children[i].classList.add('atual');
       },
@@ -209,7 +212,7 @@
       e.stopPropagation();
     });
     palco.elemento.addEventListener('click', (e) => {
-      if (e.target.closest('a')) return;
+      if (e.target.closest('a, video')) return; // clicar no vídeo toca/pausa, não troca de slide
       ir(atual + (e.clientX < window.innerWidth / 4 ? -1 : 1));
     });
 

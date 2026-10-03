@@ -1,0 +1,25 @@
+<section id="imagem-custo" data-transition="fade" style="background:#FFF8EE; color:#1F2A44; font-family:'Nunito Sans', Arial, sans-serif; padding:96px 128px; display:flex; flex-direction:column; gap:36px">
+<div style="display:flex; flex-direction:column; gap:12px">
+<p style="font-size:28px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:2px">Bloco 8 · Antes do vídeo, a imagem</p>
+<h2 style="font-family:'Fredoka', Arial, sans-serif; font-size:68px; font-weight:600; line-height:1.1; color:#1F2A44">Por que gerar imagem gasta tanto?</h2>
+</div>
+<div style="display:flex; flex-direction:row; gap:28px; align-items:stretch">
+<div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px; padding:36px">
+<p style="font-size:24px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:1px">1. É muito número</p>
+<p style="font-family:'Fredoka', Arial, sans-serif; font-size:64px; font-weight:600; line-height:1.1; color:#1F2A44">3 milhões</p>
+<p style="font-size:28px; line-height:1.4; color:#4A5568">Uma imagem quadrada comum tem 1 milhão de pontinhos, e cada pontinho leva 3 números de cor. Uma resposta de texto tem umas centenas de tokens.</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px; padding:36px">
+<p style="font-size:24px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:1px">2. Não sai de primeira</p>
+<p style="font-family:'Fredoka', Arial, sans-serif; font-size:64px; font-weight:600; line-height:1.1; color:#1F2A44">20 a 50 vezes</p>
+<p style="font-size:28px; line-height:1.4; color:#4A5568">Lembra do chuvisco? A IA limpa a imagem inteira aos poucos, e cada passada põe todas as bolinhas do modelo para trabalhar.</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#1F2A44; border-radius:24px; padding:36px">
+<p style="font-size:24px; font-weight:800; color:#F28C28; text-transform:uppercase; letter-spacing:1px">3. Alguém paga a conta</p>
+<p style="font-family:'Fredoka', Arial, sans-serif; font-size:64px; font-weight:600; line-height:1.1; color:#FFF8EE">GPU ocupada</p>
+<p style="font-size:28px; line-height:1.4; color:#D9DEE8">Aquelas placas caras do datacenter ficam segundos só na sua imagem. Por isso a conta grátis libera poucas por dia.</p>
+</div>
+</div>
+<p style="font-size:34px; line-height:1.4; color:#1F2A44">Texto é escrever um bilhete. Imagem é pintar um quadro de 1 milhão de pontinhos e repintar dezenas de vezes.</p>
+<aside>Ponte para o vídeo: se uma imagem já pesa, guarde isso para o próximo slide. Conta do slide: 1024 × 1024 = 1.048.576 pontinhos (pixels); cada um tem 3 números (vermelho, verde e azul), o que dá uns 3,1 milhões de números. Para ser honesto: os modelos atuais não trabalham direto nos pixels, e sim numa versão "encolhida" da imagem, que depois é ampliada; isso barateia, mas a lógica continua (muito número, várias passadas). As 20 a 50 passadas são a faixa comum nos modelos de difusão; alguns modelos rápidos usam menos. Diferença para o texto: no texto o modelo roda uma vez por token; na imagem roda dezenas de vezes sobre a imagem inteira. Número para citar, se quiser (conferir a fonte antes): o estudo "Power Hungry Processing" (Luccioni e outros, 2023) mediu cerca de 2,9 Wh por imagem gerada contra 0,047 Wh por geração de texto, umas 60 vezes mais, em modelos abertos da época. Lembrar o slide nuvem-recursos: são as mesmas GPUs de US$ 25–40 mil.</aside>
+</section>
