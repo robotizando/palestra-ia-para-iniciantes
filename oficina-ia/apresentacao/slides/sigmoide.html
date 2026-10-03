@@ -1,0 +1,48 @@
+<section id="sigmoide" data-transition="fade" style="background:#FFF8EE; color:#1F2A44; font-family:'Nunito Sans', Arial, sans-serif; padding:112px 128px; display:flex; flex-direction:column; gap:40px">
+<div style="display:flex; flex-direction:column; gap:16px">
+<p style="font-size:28px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:2px">Bloco 2 · A matemática por trás (2 de 4)</p>
+<h2 style="font-family:'Fredoka', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1; color:#1F2A44">Sigmoide e regressão logística</h2>
+</div>
+<div style="display:flex; flex-direction:row; gap:56px; align-items:center; flex:1">
+<div style="position:relative; width:820px; height:560px; flex:none; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px">
+<svg aria-label="Curva sigmoide: em forma de S, vai de 0 a 1, passando por 0,5 quando z vale zero" viewBox="0 0 820 560" width="820" height="560" style="position:absolute; left:0px; top:0px; width:820px; height:560px">
+<g stroke="#EFD9B8" stroke-width="2">
+<line x1="80" y1="80" x2="780" y2="80" stroke-dasharray="8 8"/>
+<line x1="80" y1="270" x2="780" y2="270" stroke-dasharray="8 8"/>
+</g>
+<g stroke="#4A5568" stroke-width="3">
+<line x1="80" y1="460" x2="790" y2="460"/>
+<line x1="430" y1="60" x2="430" y2="470"/>
+</g>
+<path d="M80.0,457.5 L97.5,456.7 L115.0,455.8 L132.5,454.7 L150.0,453.2 L167.5,451.3 L185.0,448.9 L202.5,445.8 L220.0,442.0 L237.5,437.2 L255.0,431.2 L272.5,423.8 L290.0,414.7 L307.5,403.7 L325.0,390.7 L342.5,375.4 L360.0,357.8 L377.5,338.1 L395.0,316.5 L412.5,293.6 L430.0,270.0 L447.5,246.4 L465.0,223.5 L482.5,201.9 L500.0,182.2 L517.5,164.6 L535.0,149.3 L552.5,136.3 L570.0,125.3 L587.5,116.2 L605.0,108.8 L622.5,102.8 L640.0,98.0 L657.5,94.2 L675.0,91.1 L692.5,88.7 L710.0,86.8 L727.5,85.3 L745.0,84.2 L762.5,83.3 L780.0,82.5" fill="none" stroke="#F28C28" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="395" y1="460" x2="395" y2="316.5" stroke="#1F2A44" stroke-width="3" stroke-dasharray="6 6"/>
+<line x1="395" y1="316.5" x2="430" y2="316.5" stroke="#1F2A44" stroke-width="3" stroke-dasharray="6 6"/>
+<circle cx="395" cy="316.5" r="12" fill="#1F2A44"/>
+<g font-family="Georgia, 'Times New Roman', serif" font-size="28" fill="#4A5568">
+<text x="40" y="90">1</text>
+<text x="22" y="280">0,5</text>
+<text x="40" y="470">0</text>
+<text x="796" y="470" font-style="italic">z</text>
+<text x="420" y="505">0</text>
+<text x="85" y="505">−5</text>
+<text x="752" y="505">+5</text>
+<text x="150" y="327" fill="#1F2A44">z = −0,5 → 0,38</text>
+</g>
+</svg>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:24px">
+<div style="display:flex; flex-direction:column; gap:12px; background:#1F2A44; border-radius:24px; padding:32px 36px">
+<p style="font-size:26px; font-weight:800; color:#F28C28; text-transform:uppercase; letter-spacing:1px">Sigmoide</p>
+<p style="font-family:Georgia, 'Times New Roman', serif; font-size:52px; color:#FFF8EE"><i>σ</i>(<i>z</i>) = 1 / (1 + <i>e</i><sup style="font-size:32px">−<i>z</i></sup>)</p>
+<p style="font-size:28px; line-height:1.4; color:#D9DEE8">Espreme qualquer número entre 0 e 1. Muito negativo → perto de 0. Muito positivo → perto de 1.</p>
+</div>
+<div style="display:flex; flex-direction:column; gap:12px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px; padding:32px 36px">
+<p style="font-size:26px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:1px">Regressão logística</p>
+<p style="font-size:30px; line-height:1.4; color:#4A5568">Perceptron + sigmoide = <b>uma probabilidade</b>. Para medir o quanto errou, usa a perda logística:</p>
+<p style="font-family:Georgia, 'Times New Roman', serif; font-size:38px; color:#1F2A44"><i>L</i> = −[ <i>y</i> log <i>ŷ</i> + (1 − <i>y</i>) log(1 − <i>ŷ</i>) ]</p>
+<p style="font-size:26px; color:#4A5568">Vendeu (<i>y</i> = 1) e previu 0,38: <i>L</i> = −log 0,38 ≈ <b>0,97</b></p>
+</div>
+</div>
+</div>
+<aside>A sigmoide é a "função de ativação": pega a soma z, que pode ser qualquer número, e devolve algo entre 0 e 1, que dá para ler como probabilidade. Em z = 0 dá 0,5 (meio a meio). No nosso bolo, z = −0,5 virou 0,38. Um perceptron com sigmoide é exatamente a regressão logística da estatística. A perda logística (log loss, ou entropia cruzada) mede o erro: se o bolo vendeu (y = 1) e a previsão foi 0,38, a perda é −log(0,38) ≈ 0,97; se tivesse previsto 0,99, a perda seria quase zero. Treinar é diminuir essa perda.</aside>
+</section>

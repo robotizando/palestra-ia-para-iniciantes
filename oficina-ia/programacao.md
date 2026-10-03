@@ -37,24 +37,46 @@
 - Pedir para todos deixarem o celular carregado e com internet, porque vamos usar.
 
 ## 2. Como a IA funciona, sem matemática (20 min)
+- **Alerta de matemática pesada** (slide `alerta-perceptron`, com sirene): descontração antes da conta. O mesmo slide se repete no bloco 3, antes do embedding.
+- **A matemática por trás** (slides `perceptron`, `sigmoide`, `backprop` e `dois-perceptrons`, logo depois da explicação lúdica): perceptron como soma ponderada + viés, sigmoide e regressão logística com perda logística, descida do gradiente e backpropagation, e uma rede com dois perceptrons escondidos fazendo ida e volta com números, tudo com o exemplo do bolo. Exceção pedida pelo Daniel à regra "sem matemática"; os tempos do bloco precisam ser revistos.
 - A ideia de "árvore de decisão": a IA vai escolhendo caminhos, como um jogo de perguntas.
 - Neurônios como **bolinhas com um número dentro** que passam informação adiante. Sem conta de perceptron, forward ou backpropagation.
 - A matemática aparece só de passagem, no máximo uma imagem, e segue em frente.
+- **Demonstração ao vivo** (slides `bolinhas-demo` e `mlp-demo`): primeiro uma versão de bolso sem contas (`programas/bolinhas.html`, "esse bolo vai vender bem?"), depois o simulador do Daniel (`programas/mlp_visualizer.html`). Mostrar que no começo a rede chuta e, com exemplos, acerta.
+- **Questão de tamanho** (slide `parametros`, depois das demonstrações): tabela de parâmetros da rede do bolo com 4, 8 e 64 bolinhas no meio (21, 41 e 321), uma IA média de 27 bilhões e os modelos avançados na casa de 1 trilhão.
 - Mensagem central: a IA prevê a próxima palavra com base em muitos exemplos. Não "pensa" como gente.
 
 ## 3. O que é token e por que isso custa dinheiro (10 min)
 - Token é o "pedacinho de texto" que a IA lê e escreve; toda conversa gasta tokens.
 - A conta grátis tem limite; a conta paga e a API cobram por token.
 - **Jogar a real:** o consumo de token não é transparente, e as empresas sempre empurram a versão mais nova, que gasta mais.
+- **Por que pedacinhos?** (slide `token-porque`): a rede só faz conta com números, então o texto vira lista de números. Letra por letra deixa o texto enorme; palavra inteira exigiria um dicionário infinito; tokens são o meio-termo (uns 100 mil pedaços que formam qualquer palavra). Português costuma gastar mais tokens que inglês.
+- **Opcional, para esticar** (slides `alerta-matematica` e `embedding`): um aviso de brincadeira antes da conta e, depois, o embedding. Cada token vira uma lista de números aprendida no treino, palavras parecidas ficam perto (cosseno) e rei − homem + mulher ≈ rainha.
+- **Demonstração ao vivo** (slide `token-demo`): o programa do Daniel `programas/tokens_visualizer.html` mostra o texto sendo cortado em tokens. A divisão é simulada (parecida com a do GPT-4), não é a oficial.
+- **Atenção** (slides `atencao-artigo`, `atencao-exemplo` e `atencao-conta`): o artigo "Attention Is All You Need" ("tudo que você precisa é atenção", Google, 2017), que criou o Transformer, o "T" do GPT. Exemplo "a torta não coube na caixa porque ela era grande/pequena": a atenção descobre quem é "ela". O terceiro slide traz a fórmula do artigo com números e é opcional.
+- **Demonstração ao vivo** (slide `llm-demo`): o programa do Daniel `programas/llm_visualizer.html` gera texto token por token, mostra a atenção e as probabilidades da próxima palavra, com controle de temperatura.
+- **A LLM de verdade** (slides `nuvem-fluxo`, `chatgpt-ao-vivo` e `nuvem-recursos`): o caminho da pergunta do celular até o datacenter e a volta token por token; ida ao navegador para usar o ChatGPT (pedir 3 nomes para uma loja de bolos, reparar nos pedacinhos, pedir de novo e ver a resposta mudar); e o que é preciso para rodar um ChatGPT (GPUs, servidores, energia, software), com o gancho do custo dos equipamentos e da energia: por isso a conta grátis tem limite.
 
 ## 4. Mapa das IAs: qual serve para quê (15 min)
-- Lista curta do que cada ferramenta resolve bem:
-  - **ChatGPT:** tarefas do dia a dia, textos rápidos, ideias. Também tem API para colocar em programas e agentes.
+- **Antes do mapa, outros tipos de IA** (slides `ia-imagem`, `ia-transcricao`, `ia-locucao` e `ia-visao`), cada um com o caminho do que entra até o que sai, como aprendeu, uso no negócio e "jogando a real":
+  - **Imagem a partir do prompt:** começa de um chuvisco e vai limpando em dezenas de passos, guiada pelo prompt (difusão). Erra mãos, letras e quantidades.
+  - **Transcrição:** a voz vira números, depois uma "foto do som", e um Transformer prevê o texto. O WhatsApp já faz isso.
+  - **Locução:** como a LLM, mas prevê o próximo pedacinho de som. Alerta do golpe da voz clonada: combinar palavra secreta com a família.
+  - **Visão:** a foto é cortada em quadradinhos que viram "tokens" e entram na mesma LLM com a pergunta. Erra contagem e letra pequena.
+Três slides: uma porta de entrada curta, o mapa completo e a leitura de maturidade. A lista é grande, mas a mensagem continua sendo "comece por estas", para a pessoa não sair perdida.
+- **Comece por estas** (todas grátis e com app no celular):
+  - **ChatGPT:** a mais conhecida. Tarefas do dia a dia, textos rápidos, ideias. Também tem API para colocar em programas e agentes.
   - **Claude:** tarefas mais complexas e visuais (projetos, documentos, cards). Usar com critério para não gastar os tokens da conta grátis.
-  - **Grok, Perplexity e outras:** citar que existem e o ponto forte de cada uma.
-  - **Imagem e vídeo:** citar as ferramentas, detalhes ficam para o bloco 8.
-- **O que já está maduro × o que é expectativa:** conversar com a IA (ChatGPT, Grok) e gerar imagem estão maduros; vídeo avança rápido; programação está evoluindo bem. O resto, principalmente agentes, ainda é mais expectativa do que realidade.
-- Cuidado para não virar uma lista gigante: muita referência deixa a pessoa perdida. Mostrar que existem e dizer "comece por estas".
+  - **Gemini:** a do Google. Já vem em muito celular Android e é boa para criar imagem.
+  - **Meta AI:** já está dentro do WhatsApp e do Instagram, sem instalar nada.
+- **O mapa completo, por categoria** (só para saber que existe e onde procurar):
+  - **Conversa:** as quatro acima; Grok (dentro do X, tom solto, assunto do momento); DeepSeek (chinesa e grátis, cuidado com dados); Copilot (Microsoft, junto do Windows e Office).
+  - **Pesquisa:** Perplexity (responde com os links das fontes); ChatGPT e Gemini também buscam na internet. Sempre conferir a fonte.
+  - **Imagem:** ChatGPT e Gemini (criar e editar foto); Canva com IA (artes e posts prontos); Ideogram (acerta texto escrito na imagem); Midjourney (visual artístico, só pago).
+  - **Vídeo:** Sora, Veo, Kling (vídeo a partir de texto); CapCut (editar no celular, com IA). Detalhes no bloco 8.
+  - **Voz e música:** ElevenLabs (narração com voz realista); Suno (música com letra a partir de um texto); criarmusicas.com.br (exemplo brasileiro para criar música).
+  - **Programação:** Lovable (site ou app conversando); Claude Code e Cursor (para quem já programa).
+- **O que já está maduro × o que é expectativa** (semáforo): verde, conversar com a IA e gerar imagem estão maduros; amarelo, vídeo avança rápido e programação está evoluindo bem; vermelho, o resto, principalmente agentes, ainda é mais expectativa do que realidade.
 
 ## 5. Prompt que funciona: projetos no Claude (20 min)
 - Todo mundo já usou o ChatGPT; aqui apresentamos o Claude.

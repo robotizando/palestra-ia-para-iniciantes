@@ -1,0 +1,71 @@
+<section id="nuvem-fluxo" data-transition="fade" style="background:#FFF8EE; color:#1F2A44; font-family:'Nunito Sans', Arial, sans-serif; padding:96px 128px; display:flex; flex-direction:column; gap:28px">
+<div style="display:flex; flex-direction:column; gap:12px">
+<p style="font-size:28px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:2px">Bloco 3 · A LLM de verdade</p>
+<h2 style="font-family:'Fredoka', Arial, sans-serif; font-size:64px; font-weight:600; line-height:1.1; color:#1F2A44">Onde o ChatGPT roda de verdade</h2>
+</div>
+<div style="position:relative; width:1664px; height:380px; flex:none">
+<svg aria-label="Fluxo: a pergunta sai do celular, passa pela internet e chega ao datacenter; a resposta volta pelo mesmo caminho, token por token" viewBox="0 0 1664 380" width="1664" height="380" style="position:absolute; left:0px; top:0px; width:1664px; height:380px">
+<defs>
+<marker id="seta-ida" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#F28C28"/></marker>
+<marker id="seta-volta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1F2A44"/></marker>
+</defs>
+<rect x="900" y="16" width="762" height="348" rx="28" fill="#1F2A44" opacity="0.06" stroke="#1F2A44" stroke-width="3" stroke-dasharray="10 8"/>
+<g stroke="#F28C28" stroke-width="7" fill="none" stroke-linecap="round" marker-end="url(#seta-ida)">
+<line x1="290" y1="150" x2="470" y2="150"/>
+<line x1="740" y1="150" x2="960" y2="150"/>
+<line x1="1250" y1="150" x2="1330" y2="150"/>
+</g>
+<g stroke="#1F2A44" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="4 14" marker-end="url(#seta-volta)">
+<line x1="1330" y1="250" x2="1258" y2="250"/>
+<line x1="960" y1="250" x2="748" y2="250"/>
+<line x1="470" y1="250" x2="298" y2="250"/>
+</g>
+<g font-family="'Nunito Sans', Arial, sans-serif" font-size="24" font-weight="700">
+<text x="380" y="128" text-anchor="middle" fill="#9A4508">pergunta</text>
+<text x="850" y="128" text-anchor="middle" fill="#9A4508">pergunta</text>
+<text x="380" y="290" text-anchor="middle" fill="#1F2A44">resposta</text>
+<text x="850" y="290" text-anchor="middle" fill="#1F2A44">token por token</text>
+<text x="930" y="54" fill="#1F2A44" font-size="26" font-weight="800" letter-spacing="2">DATACENTER (pode ser em outro país)</text>
+</g>
+</svg>
+<div style="position:absolute; left:0px; top:90px; width:290px; height:220px; border-radius:24px; background:#FFFDF9; border:2px solid #EFD9B8; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px">
+<x-icon name="Chat" style="color:#F28C28; width:72px; height:72px"></x-icon>
+<p style="font-family:'Fredoka', Arial, sans-serif; font-size:34px; font-weight:600">Você</p>
+<p style="font-size:22px; color:#4A5568; text-align:center">celular ou navegador</p>
+</div>
+<div style="position:absolute; left:470px; top:90px; width:270px; height:220px; border-radius:24px; background:#FFFDF9; border:2px solid #EFD9B8; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px">
+<x-icon name="Globe" style="color:#F28C28; width:72px; height:72px"></x-icon>
+<p style="font-family:'Fredoka', Arial, sans-serif; font-size:34px; font-weight:600">Internet</p>
+<p style="font-size:22px; color:#4A5568; text-align:center">viaja protegida (https)</p>
+</div>
+<div style="position:absolute; left:960px; top:90px; width:290px; height:220px; border-radius:24px; background:#FFFDF9; border:2px solid #EFD9B8; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px">
+<x-icon name="Settings" style="color:#F28C28; width:72px; height:72px"></x-icon>
+<p style="font-family:'Fredoka', Arial, sans-serif; font-size:34px; font-weight:600">Servidor</p>
+<p style="font-size:22px; color:#4A5568; text-align:center">confere a conta, guarda<br>a conversa, vira tokens</p>
+</div>
+<div style="position:absolute; left:1330px; top:90px; width:310px; height:220px; border-radius:24px; background:#1F2A44; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px">
+<x-icon name="Lightning" style="color:#F28C28; width:72px; height:72px"></x-icon>
+<p style="font-family:'Fredoka', Arial, sans-serif; font-size:34px; font-weight:600; color:#FFF8EE">GPUs + modelo</p>
+<p style="font-size:22px; color:#D9DEE8; text-align:center">bilhões de contas<br>para cada token</p>
+</div>
+</div>
+<div style="display:flex; flex-direction:row; gap:20px">
+<div style="flex:1; display:flex; flex-direction:column; gap:6px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:20px; padding:20px 24px">
+<p style="font-family:'Fredoka', Arial, sans-serif; font-size:28px; font-weight:600; color:#9A4508">1. Você digita</p>
+<p style="font-size:24px; line-height:1.35; color:#4A5568">No celular não roda IA nenhuma: ele só manda o texto.</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:6px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:20px; padding:20px 24px">
+<p style="font-family:'Fredoka', Arial, sans-serif; font-size:28px; font-weight:600; color:#9A4508">2. Vai até o datacenter</p>
+<p style="font-size:24px; line-height:1.35; color:#4A5568">Um prédio cheio de computadores, longe de você.</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:6px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:20px; padding:20px 24px">
+<p style="font-family:'Fredoka', Arial, sans-serif; font-size:28px; font-weight:600; color:#9A4508">3. As GPUs calculam</p>
+<p style="font-size:24px; line-height:1.35; color:#4A5568">Atenção, bolinhas, um token de cada vez.</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:6px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:20px; padding:20px 24px">
+<p style="font-family:'Fredoka', Arial, sans-serif; font-size:28px; font-weight:600; color:#9A4508">4. Volta aos pedacinhos</p>
+<p style="font-size:24px; line-height:1.35; color:#4A5568">Por isso a resposta aparece “digitando”.</p>
+</div>
+</div>
+<aside>Ligação com tudo que vimos: o ChatGPT de verdade faz o mesmo que o programa, só que num datacenter. O celular não roda a IA: ele manda o texto pela internet (protegido por https) até um prédio cheio de computadores, que pode ficar em outro país. Lá, um servidor confere quem você é e quanto do limite você já usou, guarda a conversa e transforma o texto em tokens. Depois, placas de vídeo especiais (GPUs) fazem as contas do modelo: atenção, bolinhas, bilhões de parâmetros, um token de cada vez. Cada token volta na hora pelo mesmo caminho, por isso a resposta aparece como se alguém estivesse digitando. Jogando a real: sem internet não funciona, e a conversa fica guardada no servidor da empresa. Não mande dado sensível de cliente sem pensar.</aside>
+</section>

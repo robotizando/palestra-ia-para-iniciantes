@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLP — Backpropagation Visual</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+
+:root {
+  --bg: #080810;
+  --card: #0d0d1a;
+  --border: #1a1a2e;
+  --accent: #00ff88;
+  --accent2: #ff6b35;
+  --accent3: #4fc3f7;
+  --text: #e0e0f0;
+  --muted: #4a4a6a;
+  --red: #ff4466;
+  --yellow: #ffd700;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+  padding: 20px 14px;
+  overflow-x: hidden;
+}
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.4;
+}
+
+.header {
+  max-width: 860px;
+  margin: 0 auto 24px;
+}
+
+h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  text-shadow: 0 0 30px rgba(0,255,136,0.3);
+  line-height: 1;
+}
+
+.subtitle {
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  margin-top: 4px;
+}
+
+.layout {
+  max-width: 860px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 580px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.3;
+}
+
+.card-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.full { grid-column: 1 / -1; }
+
+canvas { display: block; width: 100%; border-radius: 6px; }
+
+/* Controls */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 9px 18px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: all 0.15s;
+}
+
+.btn-go {
+  background: var(--accent);
+  color: #000;
+}
+.btn-go:hover { box-shadow: 0 0 20px rgba(0,255,136,0.4); transform: translateY(-1px); }
+.btn-go:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-step {
+  background: transparent;
+  color: var(--accent3);
+  border: 1px solid var(--accent3);
+}
+.btn-step:hover { background: rgba(79,195,247,0.1); }
+
+.btn-reset {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.btn-reset:hover { border-color: var(--muted); color: var(--text); }
+
+.slider-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 120px;
+}
+
+.slider-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.6rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+
+.slider-val { color: var(--accent); font-weight: 700; }
+
+input[type=range] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+/* Metrics row */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 580px) {
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+}
+
+.metric {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+
+.metric-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+.metric-lbl {
+  font-size: 0.55rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-top: 3px;
+}
+
+/* XOR table */
+.xor-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.7rem;
+}
+
+.xor-table th {
+  color: var(--muted);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  padding: 6px 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.xor-table td {
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid rgba(26,26,46,0.5);
+}
+
+.xor-table tr:last-child td { border-bottom: none; }
+
+.pred-correct { color: var(--accent); }
+.pred-wrong { color: var(--red); }
+
+/* Log */
+.log {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  height: 100px;
+  overflow-y: auto;
+  padding: 10px;
+  font-size: 0.6rem;
+  line-height: 2;
+  color: var(--muted);
+}
+
+.log::-webkit-scrollbar { width: 4px; }
+.log::-webkit-scrollbar-track { background: var(--bg); }
+.log::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.log-e { color: var(--accent3); }
+.log-l { color: var(--red); }
+.log-a { color: var(--accent); }
+
+/* Hidden neurons panel */
+.neuron-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.neuron-input-label {
+  font-size: 0.58rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.neuron-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+
+.neuron-name {
+  font-size: 0.62rem;
+  color: var(--yellow);
+  font-weight: 700;
+  min-width: 22px;
+}
+
+.neuron-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: var(--bg);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.neuron-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.2s ease;
+}
+
+.neuron-val {
+  font-size: 0.58rem;
+  color: var(--muted);
+  min-width: 36px;
+  text-align: right;
+}
+
+.neuron-dead {
+  font-size: 0.55rem;
+  color: var(--red);
+  opacity: 0.7;
+}
+
+.input-badge {
+  display: inline-block;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 0.58rem;
+  color: var(--accent3);
+  margin-right: 4px;
+}
+
+.xor-selector {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.xor-btn {
+  flex: 1;
+  padding: 6px 4px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.04em;
+}
+
+.xor-btn.active {
+  border-color: var(--yellow);
+  color: var(--yellow);
+  background: rgba(255,215,0,0.07);
+}
+
+.z-section { margin-top: 10px; }
+.z-label { font-size: 0.56rem; color: var(--muted); margin-bottom: 6px; letter-spacing: 0.1em; }
+
+/* Phase indicator */
+.phase-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.phase {
+  flex: 1;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 0.58rem;
+  text-align: center;
+  letter-spacing: 0.08em;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  transition: all 0.3s;
+}
+
+.phase.active-forward { border-color: var(--accent3); color: var(--accent3); background: rgba(79,195,247,0.08); }
+.phase.active-backward { border-color: var(--accent2); color: var(--accent2); background: rgba(255,107,53,0.08); }
+.phase.active-update { border-color: var(--accent); color: var(--accent); background: rgba(0,255,136,0.08); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>MLP Backprop</h1>
+  <p class="subtitle">// rede neural multicamada · problema XOR · 2→4→1 neurônios</p>
+</div>
+
+<div class="layout">
+
+  <!-- Controls -->
+  <div class="card full controls">
+    <button class="btn btn-go" id="btnTrain">▶ TREINAR</button>
+    <button class="btn btn-step" id="btnStep">PASSO</button>
+    <button class="btn btn-reset" id="btnReset">↺ RESET</button>
+
+    <div class="slider-wrap">
+      <div class="slider-top">LEARNING RATE <span class="slider-val" id="lrV">0.50</span></div>
+      <input type="range" id="lr" min="0.01" max="2.0" step="0.01" value="0.5">
+    </div>
+
+    <div class="slider-wrap">
+      <div class="slider-top">VELOCIDADE <span class="slider-val" id="spV">30ms</span></div>
+      <input type="range" id="speed" min="10" max="500" step="10" value="30">
+    </div>
+  </div>
+
+  <!-- Network diagram -->
+  <div class="card">
+    <div class="card-label">Arquitetura da Rede</div>
+    <div class="phase-bar">
+      <div class="phase" id="ph-fwd">→ FORWARD</div>
+      <div class="phase" id="ph-bwd">← BACKWARD</div>
+      <div class="phase" id="ph-upd">⇅ UPDATE</div>
+    </div>
+    <canvas id="cvNet" width="380" height="240"></canvas>
+  </div>
+
+  <!-- Decision boundary -->
+  <div class="card">
+    <div class="card-label">Fronteira de Decisão (XOR)</div>
+    <canvas id="cvBound" width="380" height="280"></canvas>
+  </div>
+
+  <!-- Metrics -->
+  <div class="card full">
+    <div class="card-label">Métricas</div>
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-val" id="mEp" style="color:var(--accent3)">0</div>
+        <div class="metric-lbl">ÉPOCA</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val" id="mLoss" style="color:var(--red)">—</div>
+        <div class="metric-lbl">LOSS</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val" id="mAcc" style="color:var(--accent)">—</div>
+        <div class="metric-lbl">ACURÁCIA</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val" id="mGrad" style="color:var(--accent2)">—</div>
+        <div class="metric-lbl">GRAD NORM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden neurons panel -->
+  <div class="card">
+    <div class="card-label">Neurônios Ocultos h1–h4</div>
+
+    <!-- XOR point selector -->
+    <div class="xor-selector">
+      <button class="xor-btn active" data-idx="0">x=[0,0]</button>
+      <button class="xor-btn" data-idx="1">x=[0,1]</button>
+      <button class="xor-btn" data-idx="2">x=[1,0]</button>
+      <button class="xor-btn" data-idx="3">x=[1,1]</button>
+    </div>
+
+    <div id="neuronSelectedLabel" class="neuron-input-label">
+      Entrada: <span class="input-badge">x1=0</span><span class="input-badge">x2=0</span>
+      → esperado: <span style="color:var(--red)">0</span>
+    </div>
+
+    <!-- z values (pre-ReLU) -->
+    <div class="z-section">
+      <div class="z-label">Z (PRÉ-ATIVAÇÃO) — entrada do ReLU</div>
+      <div id="zRows"></div>
+    </div>
+
+    <!-- h values (post-ReLU) -->
+    <div class="z-section" style="margin-top:14px">
+      <div class="z-label">H (PÓS-RELU) — saída do neurônio</div>
+      <div id="hRows"></div>
+    </div>
+
+    <div style="margin-top:12px; padding-top:10px; border-top:1px solid var(--border)">
+      <div class="z-label">SAÍDA FINAL ŷ (sigmoid)</div>
+      <div class="neuron-row">
+        <span class="neuron-name" style="color:var(--accent)">ŷ</span>
+        <div class="neuron-bar-wrap">
+          <div class="neuron-bar" id="yhatBar" style="background:var(--accent); width:50%"></div>
+        </div>
+        <span class="neuron-val" id="yhatVal">0.500</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loss curve -->
+  <div class="card">
+    <div class="card-label">Curva de Loss</div>
+    <canvas id="cvLoss" width="380" height="200"></canvas>
+  </div>
+
+  <!-- XOR predictions -->
+  <div class="card">
+    <div class="card-label">Previsões XOR</div>
+    <table class="xor-table">
+      <thead>
+        <tr>
+          <th>X1</th><th>X2</th><th>ESPERADO</th><th>PREVISTO</th><th>PROB</th>
+        </tr>
+      </thead>
+      <tbody id="xorBody"></tbody>
+    </table>
+
+    <div class="log" id="log" style="margin-top:12px">
+      <span style="color:var(--accent3)">// MLP inicializada. 2→4→1 neurônios.</span><br>
+      <span style="color:var(--muted)">// Problema: XOR não é linearmente separável.</span><br>
+      <span style="color:var(--muted)">// A MLP aprende a fronteira não-linear.</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── Utilidades ─────────────────────────────────────────────────
+const sigmoid = z => 1 / (1 + Math.exp(-Math.max(-500, Math.min(500, z))));
+const relu = z => Math.max(0, z);
+const reluD = z => z > 0 ? 1 : 0;
+const randn = () => (Math.random() * 2 - 1) * 0.5;
+
+// ─── Dataset XOR ────────────────────────────────────────────────
+const XOR = [
+  { x: [0, 0], y: 0 },
+  { x: [0, 1], y: 1 },
+  { x: [1, 0], y: 1 },
+  { x: [1, 1], y: 0 },
+];
+
+// ─── MLP 2 → 4 → 1 ──────────────────────────────────────────────
+// Camada 1: pesos W1[4x2], bias b1[4]
+// Camada 2: pesos W2[1x4], bias b2[1]
+
+function initModel() {
+  return {
+    W1: Array.from({length:4}, () => [randn(), randn()]),
+    b1: Array(4).fill(0),
+    W2: [Array.from({length:4}, () => randn())],
+    b2: [0],
+  };
+}
+
+let model = initModel();
+let lossHist = [];
+let epoch = 0;
+let training = false;
+let timer = null;
+let lastDeltas = null; // for visualization
+
+function forward(x, m) {
+  // Camada oculta
+  const z1 = m.W1.map((w, i) => w[0]*x[0] + w[1]*x[1] + m.b1[i]);
+  const h1 = z1.map(relu);
+  // Camada saída
+  const z2 = m.W2[0].reduce((s, w, i) => s + w * h1[i], 0) + m.b2[0];
+  const yhat = sigmoid(z2);
+  return { z1, h1, z2, yhat };
+}
+
+function trainStep() {
+  const lr = parseFloat(document.getElementById('lr').value);
+  let totalLoss = 0;
+
+  // Acumular gradientes
+  const dW1 = Array.from({length:4}, () => [0, 0]);
+  const db1 = Array(4).fill(0);
+  const dW2 = [Array(4).fill(0)];
+  const db2 = [0];
+  let gradNorm = 0;
+
+  for (const pt of XOR) {
+    const { z1, h1, z2, yhat } = forward(pt.x, model);
+    const y = pt.y;
+    const eps = 1e-7;
+    totalLoss += -(y * Math.log(yhat + eps) + (1-y) * Math.log(1 - yhat + eps));
+
+    // BACKWARD
+    // δ saída
+    const d_out = yhat - y;
+
+    // Gradientes W2, b2
+    for (let i = 0; i < 4; i++) dW2[0][i] += d_out * h1[i];
+    db2[0] += d_out;
+
+    // δ oculta
+    for (let i = 0; i < 4; i++) {
+      const d_h = model.W2[0][i] * d_out * reluD(z1[i]);
+      dW1[i][0] += d_h * pt.x[0];
+      dW1[i][1] += d_h * pt.x[1];
+      db1[i] += d_h;
+      gradNorm += d_h * d_h;
+    }
+  }
+
+  const m = XOR.length;
+
+  // Atualizar pesos
+  for (let i = 0; i < 4; i++) {
+    model.W1[i][0] -= lr * dW1[i][0] / m;
+    model.W1[i][1] -= lr * dW1[i][1] / m;
+    model.b1[i]    -= lr * db1[i] / m;
+    model.W2[0][i] -= lr * dW2[0][i] / m;
+  }
+  model.b2[0] -= lr * db2[0] / m;
+
+  const loss = totalLoss / m;
+  lossHist.push(loss);
+  epoch++;
+  lastDeltas = { dW1, dW2 };
+
+  // Accuracy
+  let correct = 0;
+  for (const pt of XOR) {
+    const { yhat } = forward(pt.x, model);
+    if (Math.round(yhat) === pt.y) correct++;
+  }
+
+  return { loss, acc: correct / XOR.length, gradNorm: Math.sqrt(gradNorm) };
+}
+
+// ─── Canvas: Network Diagram ─────────────────────────────────────
+const cvNet = document.getElementById('cvNet');
+const ctxN = cvNet.getContext('2d');
+
+function drawNetwork(phase) {
+  const W = cvNet.width, H = cvNet.height;
+  ctxN.clearRect(0, 0, W, H);
+
+  const layers = [
+    { x: W * 0.12, nodes: 2, label: 'INPUT' },
+    { x: W * 0.45, nodes: 4, label: 'OCULTA\n(ReLU)' },
+    { x: W * 0.88, nodes: 1, label: 'SAÍDA\n(Sigmoid)' },
+  ];
+
+  const nodeR = 14;
+
+  // Compute node positions
+  const positions = layers.map(layer => {
+    const total = layer.nodes;
+    return Array.from({length: total}, (_, i) => ({
+      x: layer.x,
+      y: H/2 + (i - (total-1)/2) * 52
+    }));
+  });
+
+  // Draw connections with gradient based on weight magnitude
+  for (let li = 0; li < layers.length - 1; li++) {
+    const from = positions[li];
+    const to = positions[li+1];
+    const weights = li === 0 ? model.W1 : model.W2;
+
+    for (let ti = 0; ti < to.length; ti++) {
+      for (let fi = 0; fi < from.length; fi++) {
+        const w = li === 0 ? weights[ti][fi] : weights[ti][fi];
+        const strength = Math.min(1, Math.abs(w));
+        const isPos = w > 0;
+
+        let color;
+        if (phase === 'forward') {
+          color = `rgba(79,195,247,${0.15 + strength * 0.6})`;
+        } else if (phase === 'backward') {
+          color = `rgba(255,107,53,${0.15 + strength * 0.6})`;
+        } else {
+          color = isPos
+            ? `rgba(0,255,136,${0.15 + strength * 0.5})`
+            : `rgba(255,68,102,${0.15 + strength * 0.5})`;
+        }
+
+        ctxN.beginPath();
+        ctxN.moveTo(from[fi].x, from[fi].y);
+        ctxN.lineTo(to[ti].x, to[ti].y);
+        ctxN.strokeStyle = color;
+        ctxN.lineWidth = 0.8 + strength * 2;
+        ctxN.stroke();
+      }
+    }
+  }
+
+  // Draw nodes
+  positions.forEach((layer, li) => {
+    layer.forEach((pos, ni) => {
+      // Get activation value for color
+      let val = 0.5;
+      if (li === 0) val = 0.5;
+
+      const gradient = ctxN.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, nodeR);
+
+      let innerColor, outerColor;
+      if (li === 0) {
+        innerColor = '#4fc3f7';
+        outerColor = 'rgba(79,195,247,0.2)';
+      } else if (li === 1) {
+        innerColor = '#ffd700';
+        outerColor = 'rgba(255,215,0,0.15)';
+      } else {
+        innerColor = '#00ff88';
+        outerColor = 'rgba(0,255,136,0.15)';
+      }
+
+      gradient.addColorStop(0, innerColor);
+      gradient.addColorStop(1, outerColor);
+
+      ctxN.beginPath();
+      ctxN.arc(pos.x, pos.y, nodeR, 0, Math.PI * 2);
+      ctxN.fillStyle = gradient;
+      ctxN.fill();
+      ctxN.strokeStyle = innerColor;
+      ctxN.lineWidth = 1.5;
+      ctxN.stroke();
+
+      // Label inside node
+      ctxN.fillStyle = '#000';
+      ctxN.font = 'bold 9px Space Mono';
+      ctxN.textAlign = 'center';
+      ctxN.textBaseline = 'middle';
+      if (li === 0) ctxN.fillText(`x${ni+1}`, pos.x, pos.y);
+      else if (li === 1) ctxN.fillText(`h${ni+1}`, pos.x, pos.y);
+      else ctxN.fillText('ŷ', pos.x, pos.y);
+    });
+  });
+
+  // Layer labels
+  ctxN.textBaseline = 'bottom';
+  ctxN.font = '9px Space Mono';
+  ctxN.fillStyle = '#4a4a6a';
+  ctxN.textAlign = 'center';
+  layers.forEach((l, i) => {
+    const lines = l.label.split('\n');
+    lines.forEach((line, j) => {
+      ctxN.fillText(line, l.x, H - 6 + j * 11 - (lines.length - 1) * 5);
+    });
+    // Node count badge
+    ctxN.fillStyle = '#1a1a2e';
+  });
+
+  // Forward/backward arrows
+  if (phase === 'forward') {
+    drawArrow(ctxN, W*0.18, H*0.5, W*0.38, H*0.5, '#4fc3f7');
+    drawArrow(ctxN, W*0.52, H*0.5, W*0.78, H*0.5, '#4fc3f7');
+  } else if (phase === 'backward') {
+    drawArrow(ctxN, W*0.78, H*0.5, W*0.52, H*0.5, '#ff6b35');
+    drawArrow(ctxN, W*0.38, H*0.5, W*0.18, H*0.5, '#ff6b35');
+  }
+}
+
+function drawArrow(ctx, x1, y1, x2, y2, color) {
+  const headLen = 10;
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.setLineDash([5, 4]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - headLen * Math.cos(angle - Math.PI/6), y2 - headLen * Math.sin(angle - Math.PI/6));
+  ctx.lineTo(x2 - headLen * Math.cos(angle + Math.PI/6), y2 - headLen * Math.sin(angle + Math.PI/6));
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+// ─── Canvas: Decision Boundary ───────────────────────────────────
+const cvB = document.getElementById('cvBound');
+const ctxB = cvB.getContext('2d');
+
+function drawBoundary() {
+  const W = cvB.width, H = cvB.height;
+  const pad = 40;
+  const iW = W - pad * 2, iH = H - pad * 2;
+
+  ctxB.clearRect(0, 0, W, H);
+
+  // Background heatmap
+  const res = 60;
+  const cellW = iW / res, cellH = iH / res;
+  for (let i = 0; i < res; i++) {
+    for (let j = 0; j < res; j++) {
+      const x1 = i / (res - 1);
+      const x2 = 1 - j / (res - 1);
+      const { yhat } = forward([x1, x2], model);
+      const px = pad + i * cellW;
+      const py = pad + j * cellH;
+
+      // Green = class 1, dark = class 0
+      const g = Math.round(yhat * 80);
+      const r = Math.round((1 - yhat) * 60);
+      ctxB.fillStyle = `rgba(${r}, ${g + 100}, ${Math.round(yhat * 40 + 20)}, 0.85)`;
+      ctxB.fillRect(px, py, cellW + 1, cellH + 1);
+    }
+  }
+
+  // Grid lines
+  ctxB.strokeStyle = 'rgba(26,26,46,0.8)';
+  ctxB.lineWidth = 0.5;
+  for (let i = 0; i <= 4; i++) {
+    const x = pad + iW * i / 4;
+    const y = pad + iH * i / 4;
+    ctxB.beginPath(); ctxB.moveTo(x, pad); ctxB.lineTo(x, pad + iH); ctxB.stroke();
+    ctxB.beginPath(); ctxB.moveTo(pad, y); ctxB.lineTo(pad + iW, y); ctxB.stroke();
+  }
+
+  // Axis labels
+  ctxB.fillStyle = '#4a4a6a';
+  ctxB.font = '9px Space Mono';
+  ctxB.textAlign = 'center';
+  ['0', '0.5', '1'].forEach((v, i) => {
+    ctxB.fillText(v, pad + iW * i / 2, H - 8);
+  });
+  ctxB.textAlign = 'right';
+  ['1', '0.5', '0'].forEach((v, i) => {
+    ctxB.fillText(v, pad - 6, pad + iH * i / 2 + 4);
+  });
+
+  // XOR points
+  const xorPts = [
+    { x: [0, 0], y: 0, px: 0, py: 0 },
+    { x: [0, 1], y: 1, px: 0, py: 1 },
+    { x: [1, 0], y: 1, px: 1, py: 0 },
+    { x: [1, 1], y: 0, px: 1, py: 1 },
+  ];
+
+  xorPts.forEach(pt => {
+    const cx = pad + pt.px * iW;
+    const cy = pad + (1 - pt.py) * iH;
+    const { yhat } = forward(pt.x, model);
+    const correct = Math.round(yhat) === pt.y;
+
+    ctxB.beginPath();
+    ctxB.arc(cx, cy, 10, 0, Math.PI * 2);
+    ctxB.fillStyle = pt.y === 1 ? '#00ff88' : '#ff4466';
+    ctxB.fill();
+    ctxB.strokeStyle = correct ? '#fff' : '#ffd700';
+    ctxB.lineWidth = correct ? 2 : 3;
+    ctxB.stroke();
+
+    ctxB.fillStyle = '#000';
+    ctxB.font = 'bold 9px Space Mono';
+    ctxB.textAlign = 'center';
+    ctxB.textBaseline = 'middle';
+    ctxB.fillText(pt.y, cx, cy);
+  });
+
+  // Legend
+  ctxB.textBaseline = 'middle';
+  ctxB.font = '9px Space Mono';
+  [['#00ff88','CLASSE 1'], ['#ff4466','CLASSE 0']].forEach(([c, l], i) => {
+    ctxB.fillStyle = c;
+    ctxB.fillRect(pad + i * 90, 8, 8, 8);
+    ctxB.fillStyle = '#4a4a6a';
+    ctxB.textAlign = 'left';
+    ctxB.fillText(l, pad + i * 90 + 12, 12);
+  });
+}
+
+// ─── Canvas: Loss Curve ──────────────────────────────────────────
+const cvL = document.getElementById('cvLoss');
+const ctxL = cvL.getContext('2d');
+
+function drawLoss() {
+  const W = cvL.width, H = cvL.height;
+  ctxL.clearRect(0, 0, W, H);
+  const pad = { t:16, b:28, l:44, r:16 };
+  const iW = W - pad.l - pad.r, iH = H - pad.t - pad.b;
+
+  // Grid
+  ctxL.strokeStyle = '#1a1a2e';
+  ctxL.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.t + iH * i / 4;
+    ctxL.beginPath(); ctxL.moveTo(pad.l, y); ctxL.lineTo(W - pad.r, y); ctxL.stroke();
+  }
+
+  if (lossHist.length < 2) {
+    ctxL.fillStyle = '#4a4a6a';
+    ctxL.font = '11px Space Mono';
+    ctxL.textAlign = 'center';
+    ctxL.textBaseline = 'middle';
+    ctxL.fillText('aguardando treino...', W/2, H/2);
+    return;
+  }
+
+  const maxL = Math.max(...lossHist);
+  const minL = Math.min(...lossHist);
+  const rng = maxL - minL || 1;
+
+  // Axis
+  ctxL.fillStyle = '#4a4a6a';
+  ctxL.font = '9px Space Mono';
+  ctxL.textAlign = 'right';
+  ctxL.textBaseline = 'middle';
+  for (let i = 0; i <= 4; i++) {
+    const v = maxL - rng * i / 4;
+    ctxL.fillText(v.toFixed(2), pad.l - 4, pad.t + iH * i / 4);
+  }
+
+  // Fill area
+  ctxL.beginPath();
+  lossHist.forEach((l, i) => {
+    const x = pad.l + iW * i / (lossHist.length - 1);
+    const y = pad.t + iH * (1 - (l - minL) / rng);
+    if (i === 0) ctxL.moveTo(x, y);
+    else ctxL.lineTo(x, y);
+  });
+  ctxL.lineTo(pad.l + iW, pad.t + iH);
+  ctxL.lineTo(pad.l, pad.t + iH);
+  ctxL.closePath();
+  const grad = ctxL.createLinearGradient(0, pad.t, 0, pad.t + iH);
+  grad.addColorStop(0, 'rgba(255,68,102,0.3)');
+  grad.addColorStop(1, 'rgba(255,68,102,0.02)');
+  ctxL.fillStyle = grad;
+  ctxL.fill();
+
+  // Line
+  ctxL.beginPath();
+  lossHist.forEach((l, i) => {
+    const x = pad.l + iW * i / (lossHist.length - 1);
+    const y = pad.t + iH * (1 - (l - minL) / rng);
+    if (i === 0) ctxL.moveTo(x, y);
+    else ctxL.lineTo(x, y);
+  });
+  ctxL.strokeStyle = '#ff4466';
+  ctxL.lineWidth = 2;
+  ctxL.stroke();
+
+  // Epoch label
+  ctxL.fillStyle = '#4a4a6a';
+  ctxL.textAlign = 'center';
+  ctxL.textBaseline = 'bottom';
+  ctxL.fillText(`${lossHist.length} épocas`, W/2, H - 2);
+}
+
+// ─── XOR Table ───────────────────────────────────────────────────
+function updateXOR() {
+  const tbody = document.getElementById('xorBody');
+  tbody.innerHTML = '';
+  XOR.forEach(pt => {
+    const { yhat } = forward(pt.x, model);
+    const pred = Math.round(yhat);
+    const correct = pred === pt.y;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${pt.x[0]}</td>
+      <td>${pt.x[1]}</td>
+      <td>${pt.y}</td>
+      <td class="${correct ? 'pred-correct' : 'pred-wrong'}">${pred} ${correct ? '✓' : '✗'}</td>
+      <td style="color:var(--muted)">${yhat.toFixed(3)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ─── Phase indicator ─────────────────────────────────────────────
+function setPhase(ph) {
+  ['fwd','bwd','upd'].forEach(p => {
+    document.getElementById(`ph-${p}`).className = 'phase';
+  });
+  if (ph) document.getElementById(`ph-${ph}`).className = `phase active-${ph === 'fwd' ? 'forward' : ph === 'bwd' ? 'backward' : 'update'}`;
+}
+
+// ─── Training ────────────────────────────────────────────────────
+async function runStep() {
+  if (XOR.length === 0) return;
+
+  setPhase('fwd');
+  drawNetwork('forward');
+  await sleep(80);
+
+  setPhase('bwd');
+  drawNetwork('backward');
+  await sleep(80);
+
+  const { loss, acc, gradNorm } = trainStep();
+
+  setPhase('upd');
+  drawNetwork('update');
+  await sleep(60);
+
+  setPhase(null);
+  drawBoundary();
+  drawLoss();
+  updateXOR();
+
+  document.getElementById('mEp').textContent = epoch;
+  document.getElementById('mLoss').textContent = loss.toFixed(4);
+  document.getElementById('mAcc').textContent = (acc * 100).toFixed(0) + '%';
+  document.getElementById('mGrad').textContent = gradNorm.toFixed(3);
+
+  updateNeuronPanel();
+
+  if (epoch % 50 === 0 || epoch <= 5) {
+    addLog(epoch, loss, acc);
+  }
+
+  return { loss, acc };
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function addLog(ep, loss, acc) {
+  const log = document.getElementById('log');
+  const line = document.createElement('span');
+  line.innerHTML = `<span class="log-e">ep${String(ep).padStart(4,'0')}</span> <span class="log-l">loss:${loss.toFixed(4)}</span> <span class="log-a">acc:${(acc*100).toFixed(0)}%</span>\n`;
+  log.appendChild(line);
+  log.scrollTop = log.scrollHeight;
+}
+
+async function trainLoop() {
+  training = true;
+  document.getElementById('btnTrain').disabled = true;
+  document.getElementById('btnTrain').textContent = '⏸ TREINANDO';
+
+  const maxEpoch = epoch + 2000;
+  const speed = () => parseInt(document.getElementById('speed').value);
+
+  while (training && epoch < maxEpoch) {
+    const { acc } = await runStep();
+    if (acc >= 1.0 && epoch > 100) {
+      addLog(epoch, lossHist[lossHist.length-1], acc);
+      break;
+    }
+    await sleep(speed());
+  }
+
+  stopTraining();
+}
+
+function stopTraining() {
+  training = false;
+  document.getElementById('btnTrain').disabled = false;
+  document.getElementById('btnTrain').textContent = '▶ TREINAR';
+  setPhase(null);
+}
+
+function reset() {
+  stopTraining();
+  model = initModel();
+  lossHist = [];
+  epoch = 0;
+  lastDeltas = null;
+  drawNetwork(null);
+  drawBoundary();
+  drawLoss();
+  updateXOR();
+  document.getElementById('mEp').textContent = '0';
+  document.getElementById('mLoss').textContent = '—';
+  document.getElementById('mAcc').textContent = '—';
+  document.getElementById('mGrad').textContent = '—';
+  document.getElementById('log').innerHTML =
+    '<span style="color:var(--accent3)">// Reset. Pesos reinicializados aleatoriamente.</span>\n<span style="color:var(--muted)">// Arquitetura: 2→4→1 (4 neurônios ocultos).</span>\n';
+  updateNeuronPanel();
+}
+
+// ─── Events ──────────────────────────────────────────────────────
+document.getElementById('btnTrain').onclick = () => {
+  if (training) stopTraining();
+  else trainLoop();
+};
+document.getElementById('btnStep').onclick = () => {
+  if (!training) runStep();
+};
+document.getElementById('btnReset').onclick = reset;
+
+document.getElementById('lr').oninput = e => {
+  document.getElementById('lrV').textContent = parseFloat(e.target.value).toFixed(2);
+};
+document.getElementById('speed').oninput = e => {
+  document.getElementById('spV').textContent = e.target.value + 'ms';
+};
+
+// ─── Neuron Panel ────────────────────────────────────────────────
+let selectedXOR = 0;
+
+function updateNeuronPanel() {
+  const pt = XOR[selectedXOR];
+  const { z1, h1, yhat } = forward(pt.x, model);
+
+  // Update label
+  const expected = pt.y;
+  document.getElementById('neuronSelectedLabel').innerHTML =
+    `Entrada: <span class="input-badge">x1=${pt.x[0]}</span><span class="input-badge">x2=${pt.x[1]}</span>
+     → esperado: <span style="color:${expected ? 'var(--accent)' : 'var(--red)'}">${expected}</span>`;
+
+  // Max absolute z for normalization
+  const maxZ = Math.max(...z1.map(Math.abs), 1);
+
+  // Z rows (pre-ReLU)
+  const zRows = document.getElementById('zRows');
+  zRows.innerHTML = '';
+  z1.forEach((z, i) => {
+    const pct = Math.abs(z) / maxZ * 100;
+    const isNeg = z < 0;
+    const isDead = z <= 0;
+    const row = document.createElement('div');
+    row.className = 'neuron-row';
+    row.innerHTML = `
+      <span class="neuron-name" style="color:var(--muted)">z${i+1}</span>
+      <div class="neuron-bar-wrap">
+        <div class="neuron-bar" style="width:${pct.toFixed(1)}%; background:${isNeg ? '#ff4466' : '#4fc3f7'}"></div>
+      </div>
+      <span class="neuron-val">${z.toFixed(3)}</span>
+      ${isDead ? '<span class="neuron-dead">MORTO</span>' : ''}
+    `;
+    zRows.appendChild(row);
+  });
+
+  // H rows (post-ReLU)
+  const maxH = Math.max(...h1, 0.001);
+  const hRows = document.getElementById('hRows');
+  hRows.innerHTML = '';
+  h1.forEach((h, i) => {
+    const pct = h / maxH * 100;
+    const isDead = h === 0;
+    const row = document.createElement('div');
+    row.className = 'neuron-row';
+    row.innerHTML = `
+      <span class="neuron-name">h${i+1}</span>
+      <div class="neuron-bar-wrap">
+        <div class="neuron-bar" style="width:${pct.toFixed(1)}%; background:${isDead ? '#2a2a3e' : 'var(--yellow)'}"></div>
+      </div>
+      <span class="neuron-val" style="color:${isDead ? 'var(--muted)' : 'var(--yellow)'}">${h.toFixed(3)}</span>
+      ${isDead ? '<span class="neuron-dead">ReLU=0</span>' : ''}
+    `;
+    hRows.appendChild(row);
+  });
+
+  // yhat
+  document.getElementById('yhatBar').style.width = (yhat * 100).toFixed(1) + '%';
+  document.getElementById('yhatBar').style.background = yhat > 0.5 ? 'var(--accent)' : 'var(--red)';
+  document.getElementById('yhatVal').textContent = yhat.toFixed(3);
+  document.getElementById('yhatVal').style.color = yhat > 0.5 ? 'var(--accent)' : 'var(--red)';
+}
+
+// XOR selector buttons
+document.querySelectorAll('.xor-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.xor-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedXOR = parseInt(btn.dataset.idx);
+    updateNeuronPanel();
+  };
+});
+
+// ─── Init ────────────────────────────────────────────────────────
+drawNetwork(null);
+drawBoundary();
+drawLoss();
+updateXOR();
+updateNeuronPanel();
+</script>
+</body>
+</html>

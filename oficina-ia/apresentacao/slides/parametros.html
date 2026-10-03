@@ -1,0 +1,43 @@
+<section id="parametros" data-transition="fade" style="background:#FFF8EE; color:#1F2A44; font-family:'Nunito Sans', Arial, sans-serif; padding:96px 128px; display:flex; flex-direction:column; gap:32px">
+<div style="display:flex; flex-direction:column; gap:12px">
+<p style="font-size:28px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:2px">Bloco 2 · Questão de tamanho</p>
+<h2 style="font-family:'Fredoka', Arial, sans-serif; font-size:64px; font-weight:600; line-height:1.1; color:#1F2A44">Quantos números uma IA precisa ajustar?</h2>
+</div>
+<div style="display:flex; flex-direction:column; border:2px solid #EFD9B8; border-radius:24px; overflow:hidden">
+<div style="display:flex; flex-direction:row; align-items:center; background:#1F2A44; padding:18px 36px; gap:24px">
+<p style="flex:1.5; font-size:24px; font-weight:800; color:#F28C28; text-transform:uppercase; letter-spacing:1px">Rede</p>
+<p style="flex:1.2; font-size:24px; font-weight:800; color:#F28C28; text-transform:uppercase; letter-spacing:1px; text-align:right">Parâmetros (pesos + vieses)</p>
+<p style="flex:1; font-size:24px; font-weight:800; color:#F28C28; text-transform:uppercase; letter-spacing:1px; text-align:right">1 segundo para cada um</p>
+</div>
+<div style="display:flex; flex-direction:row; align-items:center; background:#FFFDF9; padding:16px 36px; gap:24px; border-bottom:2px solid #EFD9B8">
+<p style="flex:1.5; font-size:30px; color:#1F2A44"><b>4</b> bolinhas no meio</p>
+<p style="flex:1.2; font-family:'Fredoka', Arial, sans-serif; font-size:40px; font-weight:600; color:#1F2A44; text-align:right">21</p>
+<p style="flex:1; font-size:30px; color:#4A5568; text-align:right">21 segundos</p>
+</div>
+<div style="display:flex; flex-direction:row; align-items:center; background:#FFFDF9; padding:16px 36px; gap:24px; border-bottom:2px solid #EFD9B8">
+<p style="flex:1.5; font-size:30px; color:#1F2A44"><b>8</b> bolinhas no meio</p>
+<p style="flex:1.2; font-family:'Fredoka', Arial, sans-serif; font-size:40px; font-weight:600; color:#1F2A44; text-align:right">41</p>
+<p style="flex:1; font-size:30px; color:#4A5568; text-align:right">41 segundos</p>
+</div>
+<div style="display:flex; flex-direction:row; align-items:center; background:#FFFDF9; padding:16px 36px; gap:24px; border-bottom:2px solid #EFD9B8">
+<p style="flex:1.5; font-size:30px; color:#1F2A44"><b>64</b> bolinhas no meio</p>
+<p style="flex:1.2; font-family:'Fredoka', Arial, sans-serif; font-size:40px; font-weight:600; color:#1F2A44; text-align:right">321</p>
+<p style="flex:1; font-size:30px; color:#4A5568; text-align:right">5 minutos</p>
+</div>
+<div style="display:flex; flex-direction:row; align-items:center; background:#FFEBD2; padding:18px 36px; gap:24px; border-bottom:2px solid #EFD9B8">
+<p style="flex:1.5; font-size:30px; color:#1F2A44"><b>IA média</b> <span style="color:#4A5568">(27 bilhões)</span></p>
+<p style="flex:1.2; font-family:'Fredoka', Arial, sans-serif; font-size:40px; font-weight:600; color:#9A4508; text-align:right">27.000.000.000</p>
+<p style="flex:1; font-size:30px; color:#1F2A44; text-align:right"><b>856 anos</b></p>
+</div>
+<div style="display:flex; flex-direction:row; align-items:center; background:#F28C28; padding:18px 36px; gap:24px">
+<p style="flex:1.5; font-size:30px; color:#1F2A44"><b>Modelos avançados</b> <span>(1 trilhão)</span></p>
+<p style="flex:1.2; font-family:'Fredoka', Arial, sans-serif; font-size:40px; font-weight:600; color:#1F2A44; text-align:right">1.000.000.000.000</p>
+<p style="flex:1; font-size:30px; color:#1F2A44; text-align:right"><b>31.700 anos</b></p>
+</div>
+</div>
+<div style="display:flex; flex-direction:row; gap:24px">
+<p style="flex:1; font-size:26px; line-height:1.4; color:#4A5568">Rede do bolo: 3 perguntas → bolinhas no meio → 1 nota. Cada bolinha a mais soma 5 números (3 pesos de entrada, 1 viés, 1 peso de saída).</p>
+<p style="flex:1; font-size:26px; line-height:1.4; color:#4A5568">Só para guardar 1 trilhão de números são uns <b>2 TB de memória</b>. Por isso os grandes rodam em datacenter, não no celular.</p>
+</div>
+<aside>Conta da tabela: na rede do bolo (3 entradas, N bolinhas no meio, 1 saída) são 3·N pesos de entrada + N vieses + N pesos de saída + 1 viés de saída = 5N + 1. Com 2 bolinhas dá 11, que são os números do slide dos dois perceptrons. 4 → 21, 8 → 41, 64 → 321. A coluna "1 segundo para cada um" é só para dar escala: se alguém ajustasse um parâmetro por segundo, sem parar, 27 bilhões levariam uns 856 anos e 1 trilhão uns 31.700 anos. Treinar repete isso milhares de vezes, para cada exemplo: por isso custa tão caro e gasta tanta energia. 27 bilhões é o tamanho de modelos abertos médios, que já rodam num computador potente (uns 54 GB guardando cada número com 16 bits). 1 trilhão é a ordem de grandeza dos modelos avançados: as empresas não divulgam o tamanho exato, então é estimativa. Gancho para o token: quanto maior o modelo, mais conta por token, e é isso que se paga.</aside>
+</section>

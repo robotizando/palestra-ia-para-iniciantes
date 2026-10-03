@@ -1,0 +1,104 @@
+/* Player local dos slides. Reproduz o essencial do formato do tipo Slides do
+   claude.ai: tela de 1920×1080, estilos inline e os padrões abaixo. */
+
+html, body { margin: 0; height: 100%; background: #000; color: #FFF8EE; font-family: 'Nunito Sans', Arial, sans-serif; overflow: hidden; }
+.aviso { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; margin: 0; padding: 32px; font-size: 22px; text-align: center; white-space: pre-line; }
+
+/* ---------- Palco: a tela de 1920×1080 escalada para caber ---------- */
+
+.palco { position: relative; overflow: hidden; background: #000; }
+.tela { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: center; }
+
+.tela > section {
+  position: absolute !important; left: 0 !important; top: 0 !important;
+  width: 1920px !important; height: 1080px !important;
+  box-sizing: border-box; overflow: hidden;
+  font-size: 32px; line-height: 1.4; font-weight: 400;
+  opacity: 0; visibility: hidden;
+  transition: opacity .45s ease, visibility 0s linear .45s;
+}
+.tela > section.atual { opacity: 1; visibility: visible; transition: opacity .45s ease; }
+.tela.sem-animacao > section { transition: none; }
+
+/* Sem "display", seções e divs são colunas flex (regra do formato). */
+.tela section:not([style*="display"]),
+.tela div:not([style*="display"]) { display: flex; flex-direction: column; }
+
+.tela * { margin: 0; box-sizing: border-box; }
+.tela h1 { font-size: 96px; font-weight: 600; line-height: 1.1; }
+.tela h2 { font-size: 64px; font-weight: 600; line-height: 1.15; }
+.tela h3 { font-size: 44px; font-weight: 600; line-height: 1.2; }
+.tela ul, .tela ol { padding-left: 1.2em; }
+.tela aside { display: none; }
+/* Tabelas: células com respiro e linhas finas entre as linhas. */
+.tela table { border-collapse: collapse; line-height: 1.3; }
+.tela th, .tela td { padding: .35em .6em; text-align: left; vertical-align: middle; border-bottom: 1px solid rgba(31, 42, 68, .15); }
+.tela th { font-weight: 700; }
+.tela a { color: inherit; }
+
+/* ---------- Formas e ícones ---------- */
+
+x-icon { display: block; flex: none; width: 48px; height: 48px; }
+x-icon svg { display: block; width: 100%; height: 100%; fill: currentColor; }
+
+x-shape { display: block; flex: none; }
+x-shape[kind="rounded"] { border-radius: 24px; }
+x-shape[kind="ellipse"] { border-radius: 50%; }
+x-shape[kind="diamond"] { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+/* Seta em bloco: a ponta ocupa os últimos 40% do comprimento. */
+x-shape[kind="arrow-right"] { clip-path: polygon(0 25%, 60% 25%, 60% 0, 100% 50%, 60% 100%, 60% 75%, 0 75%); }
+x-shape[kind="arrow-left"]  { clip-path: polygon(100% 25%, 40% 25%, 40% 0, 0 50%, 40% 100%, 40% 75%, 100% 75%); }
+x-shape[kind="arrow-down"]  { clip-path: polygon(25% 0, 25% 60%, 0 60%, 50% 100%, 100% 60%, 75% 60%, 75% 0); }
+x-shape[kind="arrow-up"]    { clip-path: polygon(25% 100%, 25% 40%, 0 40%, 50% 0, 100% 40%, 75% 40%, 75% 100%); }
+x-shape[kind="line"] { background: none !important; border-top-style: solid; border-top-width: 2px; height: 0 !important; }
+
+/* ---------- Apresentação (janela principal) ---------- */
+
+.modo-slides .palco { position: fixed; inset: 0; cursor: none; }
+.modo-slides.mouse .palco { cursor: default; }
+.cortina { position: fixed; inset: 0; background: #000; display: none; z-index: 5; }
+.apagado .cortina { display: block; }
+
+.barra {
+  position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 10;
+  display: flex; gap: 8px; align-items: center; padding: 8px 12px; border-radius: 999px;
+  background: rgba(31, 42, 68, .92); color: #FFF8EE; font-size: 15px;
+  opacity: 0; pointer-events: none; transition: opacity .3s;
+}
+.mouse .barra { opacity: 1; pointer-events: auto; }
+.barra button {
+  font: inherit; color: inherit; background: rgba(255, 255, 255, .12); border: 0; border-radius: 999px;
+  padding: 6px 12px; cursor: pointer;
+}
+.barra button:hover { background: #F28C28; color: #1F2A44; }
+.barra .contador { padding: 0 8px; font-variant-numeric: tabular-nums; }
+
+.salto {
+  position: fixed; right: 24px; top: 24px; z-index: 10; padding: 8px 16px; border-radius: 12px;
+  background: rgba(31, 42, 68, .92); font-size: 28px; font-variant-numeric: tabular-nums; display: none;
+}
+.salto.ativo { display: block; }
+
+/* ---------- Janela de notas do apresentador ---------- */
+
+.modo-notas { background: #1F2A44; }
+.notas {
+  position: fixed; inset: 0; display: grid; gap: 20px; padding: 20px;
+  grid-template-columns: 3fr 2fr; grid-template-rows: auto 1fr;
+}
+.notas .atual-box { grid-row: 1 / span 2; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+.notas .direita { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+.notas .rotulo { font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: #F28C28; font-weight: 800; }
+.notas .palco { border-radius: 8px; width: 100%; aspect-ratio: 16 / 9; flex: none; }
+.notas .texto {
+  flex: 1; min-height: 0; overflow: auto; font-size: 26px; line-height: 1.45;
+  background: #FFF8EE; color: #1F2A44; border-radius: 8px; padding: 20px 24px;
+}
+.notas .texto.vazio { color: #8a8f9c; font-style: italic; }
+.notas .relogios { display: flex; gap: 16px; align-items: center; font-size: 34px; font-variant-numeric: tabular-nums; }
+.notas .relogios button {
+  font: inherit; font-size: 15px; color: #1F2A44; background: #F28C28; border: 0; border-radius: 999px;
+  padding: 6px 14px; cursor: pointer;
+}
+.notas .contador { font-size: 20px; color: #D9DEE8; }
+.notas .fim { display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; background: #000; color: #D9DEE8; font-size: 22px; }

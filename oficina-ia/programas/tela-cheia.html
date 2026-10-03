@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tela cheia</title>
+<!--
+  Moldura para mostrar um programa desta pasta em tela cheia, sem mexer no programa.
+  Uso: tela-cheia.html?p=mlp_visualizer.html
+  O navegador só deixa entrar em tela cheia depois de um clique nesta aba, por isso a camada "Toque".
+  F liga/desliga a tela cheia (com o foco na moldura); Esc sai; Ctrl+W fecha a aba e volta aos slides.
+-->
+<link rel="stylesheet" href="../apresentacao/player/fontes.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #1F2A44; }
+  iframe { display: block; width: 100vw; height: 100vh; border: 0; }
+  .camada {
+    position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+    background: rgba(31, 42, 68, .82); color: #FFF8EE; cursor: pointer; border: 0; width: 100%;
+    font-family: 'Fredoka', 'Nunito Sans', Arial, sans-serif; text-align: center; padding: 24px;
+  }
+  .camada b { font-size: clamp(28px, 5vw, 64px); font-weight: 600; }
+  .camada span { font-size: clamp(16px, 2vw, 24px); opacity: .8; }
+  .camada .play {
+    width: clamp(90px, 12vw, 160px); height: clamp(90px, 12vw, 160px); border-radius: 50%;
+    background: #F28C28; color: #1F2A44; display: flex; align-items: center; justify-content: center;
+    font-size: clamp(40px, 6vw, 80px); padding-left: .12em;
+  }
+  .erro { color: #FFF8EE; font: 24px Arial, sans-serif; padding: 48px; }
+</style>
+</head>
+<body>
+<script>
+  (function () {
+    var nome = new URLSearchParams(location.search).get('p') || '';
+    // Só arquivos .html desta mesma pasta.
+    if (!/^[\w.-]+\.html$/.test(nome) || nome === 'tela-cheia.html') {
+      document.body.innerHTML = '<p class="erro">Programa não encontrado. Use tela-cheia.html?p=nome-do-programa.html</p>';
+      return;
+    }
+    document.title = nome.replace(/\.html$/, '');
+
+    var quadro = document.createElement('iframe');
+    quadro.src = nome;
+    quadro.title = nome;
+    quadro.allow = 'fullscreen';
+    document.body.appendChild(quadro);
+
+    var camada = document.createElement('button');
+    camada.className = 'camada';
+    camada.innerHTML = '<div class="play">▶</div><b>Toque para começar em tela cheia</b><span>Esc sai da tela cheia · Ctrl+W volta para os slides</span>';
+    document.body.appendChild(camada);
+
+    function alternar() {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () {});
+    }
+    camada.addEventListener('click', function () {
+      if (!document.fullscreenElement) alternar();
+      camada.remove();
+      quadro.focus();
+    });
+    document.addEventListener('keydown', function (e) {
+      if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey) alternar();
+    });
+  })();
+</script>
+</body>
+</html>

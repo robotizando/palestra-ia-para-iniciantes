@@ -1,0 +1,34 @@
+<section id="atencao-conta" data-transition="fade" style="background:#FFF8EE; color:#1F2A44; font-family:'Nunito Sans', Arial, sans-serif; padding:96px 128px; display:flex; flex-direction:column; gap:32px">
+<div style="display:flex; flex-direction:column; gap:12px">
+<p style="font-size:28px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:2px">Bloco 3 · Atenção (3 de 3) · Para esticar</p>
+<h2 style="font-family:'Fredoka', Arial, sans-serif; font-size:64px; font-weight:600; line-height:1.1; color:#1F2A44">A fórmula do artigo, com o “ela”</h2>
+</div>
+<div style="display:flex; flex-direction:row; gap:24px">
+<div style="flex:1.1; display:flex; flex-direction:column; gap:14px; background:#1F2A44; border-radius:24px; padding:32px 36px">
+<p style="font-size:24px; font-weight:800; color:#F28C28; text-transform:uppercase; letter-spacing:1px">Atenção, como está no artigo</p>
+<p style="font-family:Georgia, 'Times New Roman', serif; font-size:35px; white-space:nowrap; color:#FFF8EE">Atenção(<i>Q</i>, <i>K</i>, <i>V</i>) = softmax( <i>QK</i><sup style="font-size:26px">T</sup> / √<i>d<sub>k</sub></i> ) · <i>V</i></p>
+<p style="font-size:27px; line-height:1.45; color:#D9DEE8"><b style="color:#F28C28">Q</b>, pergunta: o que “ela” procura?<br><b style="color:#F28C28">K</b>, etiqueta: o que cada palavra oferece.<br><b style="color:#F28C28">V</b>, conteúdo: o que passa adiante.<br><b style="color:#F28C28">softmax</b> transforma as notas em pesos que somam 100%.</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:10px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px; padding:28px 32px">
+<p style="font-size:24px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:1px">Exemplo <span style="text-transform:none; font-family:Georgia, 'Times New Roman', serif; font-weight:400">(<i>q</i><sub>ela</sub> = (1; 1), <i>d<sub>k</sub></i> = 2)</span></p>
+<div style="display:flex; flex-direction:row; gap:12px; padding:6px 0px; border-bottom:2px solid #EFD9B8">
+<p style="flex:1.4; font-size:22px; font-weight:800; color:#4A5568">palavra (<i>k</i>)</p><p style="flex:0.8; font-size:22px; font-weight:800; color:#4A5568; text-align:right"><i>q</i>·<i>k</i></p><p style="flex:0.8; font-size:22px; font-weight:800; color:#4A5568; text-align:right">÷ √2</p><p style="flex:0.9; font-size:22px; font-weight:800; color:#4A5568; text-align:right">peso</p>
+</div>
+<div style="display:flex; flex-direction:row; gap:12px; font-family:Georgia, 'Times New Roman', serif; font-size:28px">
+<p style="flex:1.4">torta (2; 1)</p><p style="flex:0.8; text-align:right">3</p><p style="flex:0.8; text-align:right">2,12</p><p style="flex:0.9; text-align:right; font-weight:700; color:#9A4508">57%</p>
+</div>
+<div style="display:flex; flex-direction:row; gap:12px; font-family:Georgia, 'Times New Roman', serif; font-size:28px">
+<p style="flex:1.4">caixa (1; 0,5)</p><p style="flex:0.8; text-align:right">1,5</p><p style="flex:0.8; text-align:right">1,06</p><p style="flex:0.9; text-align:right; font-weight:700">20%</p>
+</div>
+<div style="display:flex; flex-direction:row; gap:12px; font-family:Georgia, 'Times New Roman', serif; font-size:28px">
+<p style="flex:1.4">grande (0,5; 0,5)</p><p style="flex:0.8; text-align:right">1</p><p style="flex:0.8; text-align:right">0,71</p><p style="flex:0.9; text-align:right; font-weight:700">14%</p>
+</div>
+<div style="display:flex; flex-direction:row; gap:12px; font-family:Georgia, 'Times New Roman', serif; font-size:28px">
+<p style="flex:1.4">coube (0; 0,5)</p><p style="flex:0.8; text-align:right">0,5</p><p style="flex:0.8; text-align:right">0,35</p><p style="flex:0.9; text-align:right; font-weight:700">10%</p>
+</div>
+<p style="font-size:24px; line-height:1.4; color:#4A5568">peso = <i>e</i><sup>nota</sup> ÷ soma de todos os <i>e</i><sup>nota</sup></p>
+</div>
+</div>
+<p style="font-size:28px; line-height:1.4; color:#4A5568"><b style="color:#1F2A44">No artigo:</b> 8 “cabeças” de atenção olhando ao mesmo tempo, cada uma de um jeito, em 6 camadas empilhadas, com 512 números por palavra. Os modelos de hoje têm muito mais.</p>
+<aside>Opcional, para quem quiser a conta. Cada palavra gera três listas de números (aprendidas no treino): Q, a pergunta que ela faz ("ela" quer saber a quem se refere); K, a etiqueta que cada palavra mostra; V, o conteúdo que ela entrega. A nota de cada par é o produto escalar q·k (multiplica e soma, igual ao perceptron), dividida por √dₖ para os números não explodirem. O softmax transforma as notas em pesos: eleva e à nota e divide pela soma. Conta do exemplo, com q = (1; 1): torta (2; 1) dá 1·2 + 1·1 = 3, que dividido por √2 dá 2,12; caixa (1; 0,5) dá 1,5 e 1,06; grande (0,5; 0,5) dá 1 e 0,71; coube (0; 0,5) dá 0,5 e 0,35. e elevado a essas notas: 8,34; 2,89; 2,03; 1,42; soma 14,68. Pesos: 57%, 20%, 14% e 10% (arredondados; a soma dá 101% por causa do arredondamento). O resultado para "ela" é a mistura dos V de cada palavra com esses pesos: 57% do conteúdo de "torta" e assim por diante. No modelo base do artigo: 8 cabeças, 6 camadas no codificador e 6 no decodificador, vetores de 512 números (64 por cabeça). Contas conferidas em Python.</aside>
+</section>

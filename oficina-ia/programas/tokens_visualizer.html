@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O que são Tokens?</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+
+:root {
+  --bg: #080810;
+  --card: #0d0d1a;
+  --border: #1a1a2e;
+  --accent: #00ff88;
+  --accent2: #ff6b35;
+  --accent3: #4fc3f7;
+  --purple: #b388ff;
+  --pink: #ff80ab;
+  --yellow: #ffd700;
+  --text: #e0e0f0;
+  --muted: #4a4a6a;
+  --red: #ff4466;
+
+  --c0: #00ff88;
+  --c1: #4fc3f7;
+  --c2: #ff6b35;
+  --c3: #b388ff;
+  --c4: #ffd700;
+  --c5: #ff80ab;
+  --c6: #80cbc4;
+  --c7: #ffcc02;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+  padding: 20px 14px;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 1000; opacity: 0.4;
+}
+
+.header { max-width: 900px; margin: 0 auto 20px; }
+
+h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2rem, 6vw, 3rem);
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  text-shadow: 0 0 30px rgba(0,255,136,0.3);
+  line-height: 1;
+}
+
+.subtitle { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.12em; margin-top: 4px; }
+
+.layout { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute; top:0; left:0; right:0; height:1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.3;
+}
+
+.card-label {
+  font-size: 0.6rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 14px;
+}
+
+/* Textarea */
+.input-wrap { position: relative; }
+
+textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  padding: 14px 16px;
+  resize: vertical;
+  min-height: 90px;
+  outline: none;
+  letter-spacing: 0.03em;
+  transition: border-color 0.2s;
+}
+
+textarea:focus { border-color: var(--purple); }
+textarea::placeholder { color: var(--muted); }
+
+/* Quick examples */
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.ex-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  padding: 5px 11px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.04em;
+}
+
+.ex-btn:hover { border-color: var(--purple); color: var(--purple); background: rgba(179,136,255,0.07); }
+
+/* Stats bar */
+.stats-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.stat-box {
+  flex: 1;
+  min-width: 100px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.stat-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+}
+
+.stat-lbl { font-size: 0.52rem; color: var(--muted); letter-spacing: 0.1em; margin-top: 3px; }
+
+/* Token display */
+.token-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 18px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-height: 70px;
+  align-items: flex-start;
+  align-content: flex-start;
+  line-height: 2.2;
+}
+
+.tok {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: default;
+  position: relative;
+  transition: transform 0.15s;
+  letter-spacing: 0.02em;
+  white-space: pre;
+}
+
+.tok:hover { transform: translateY(-2px); z-index: 10; }
+
+.tok-num {
+  font-size: 0.45rem;
+  opacity: 0.6;
+  margin-left: 4px;
+  font-weight: 400;
+  vertical-align: super;
+}
+
+/* Tooltip */
+.tok-tip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a2e;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.55rem;
+  white-space: nowrap;
+  color: var(--text);
+  letter-spacing: 0.06em;
+  z-index: 100;
+  pointer-events: none;
+  line-height: 1.6;
+}
+
+.tok:hover .tok-tip { display: block; }
+
+/* Legend */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.56rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  flex-shrink: 0;
+}
+
+/* Two col */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+/* Comparison table */
+.comp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.65rem;
+}
+
+.comp-table th {
+  color: var(--muted);
+  font-size: 0.56rem;
+  letter-spacing: 0.1em;
+  padding: 7px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.comp-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(26,26,46,0.5);
+  vertical-align: top;
+  line-height: 1.6;
+}
+
+.comp-table tr:last-child td { border-bottom: none; }
+
+.word-cell { color: var(--accent3); }
+.tokens-cell { color: var(--text); }
+.count-cell { text-align: right; font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; }
+
+/* Explainer */
+.explainer {
+  background: rgba(179,136,255,0.06);
+  border: 1px solid rgba(179,136,255,0.2);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 0.65rem;
+  color: var(--purple);
+  letter-spacing: 0.05em;
+  line-height: 1.9;
+}
+
+.explainer b { color: #fff; }
+.explainer .hl { color: var(--yellow); }
+
+/* Mode toggle */
+.mode-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.mode-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  padding: 6px 14px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.06em;
+}
+
+.mode-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,255,136,0.07); }
+
+/* Token ID badge */
+.tok-id-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-height: 56px;
+  align-items: center;
+}
+
+.tok-id {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.95rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(26,26,46,0.8);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+/* Curiosity cards */
+.curiosity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.curiosity-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.curiosity-title {
+  font-size: 0.58rem;
+  color: var(--accent2);
+  letter-spacing: 0.12em;
+  margin-bottom: 8px;
+}
+
+.curiosity-body {
+  font-size: 0.63rem;
+  color: var(--text);
+  line-height: 1.7;
+  letter-spacing: 0.03em;
+}
+
+.curiosity-body b { color: var(--yellow); }
+
+/* Progress bar for ratio */
+.ratio-bar-wrap {
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.ratio-bar {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 0.5s ease;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>O que são Tokens?</h1>
+  <p class="subtitle">// como a IA vê e divide o texto antes de processar</p>
+</div>
+
+<div class="layout">
+
+  <!-- Input -->
+  <div class="card">
+    <div class="card-label">① Digite qualquer texto — veja como a IA o enxerga</div>
+    <div class="input-wrap">
+      <textarea id="inputText" placeholder="Digite ou cole um texto aqui..." spellcheck="false">A inteligência artificial está transformando o mundo.</textarea>
+    </div>
+    <div class="examples">
+      <span style="font-size:0.56rem;color:var(--muted);align-self:center;letter-spacing:0.08em">EXEMPLOS:</span>
+      <button class="ex-btn" data-text="Olá, mundo!">Olá, mundo!</button>
+      <button class="ex-btn" data-text="programação">programação</button>
+      <button class="ex-btn" data-text="inteligência artificial">inteligência artificial</button>
+      <button class="ex-btn" data-text="ChatGPT é incrível!">ChatGPT é incrível!</button>
+      <button class="ex-btn" data-text="1234567890">1234567890</button>
+      <button class="ex-btn" data-text="🤖🌍❤️">emojis 🤖🌍❤️</button>
+      <button class="ex-btn" data-text="O Brasil é um país de grande diversidade cultural e natural.">frase completa</button>
+      <button class="ex-btn" data-text="Para aprender programação é preciso praticar muito e nunca desistir.">conselho</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="card">
+    <div class="card-label">② Estatísticas</div>
+    <div class="stats-bar">
+      <div class="stat-box">
+        <div class="stat-val" id="statChars" style="color:var(--accent3)">—</div>
+        <div class="stat-lbl">CARACTERES</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="statWords" style="color:var(--purple)">—</div>
+        <div class="stat-lbl">PALAVRAS</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="statTokens" style="color:var(--accent)">—</div>
+        <div class="stat-lbl">TOKENS</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="statRatio" style="color:var(--accent2)">—</div>
+        <div class="stat-lbl">TOKENS / PALAVRA</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="statCost" style="color:var(--yellow)">—</div>
+        <div class="stat-lbl">CUSTO ESTIMADO</div>
+      </div>
+    </div>
+    <div class="ratio-bar-wrap" style="margin-top:12px">
+      <div class="ratio-bar" id="ratioBar" style="width:40%"></div>
+    </div>
+    <div style="font-size:0.55rem;color:var(--muted);margin-top:5px;letter-spacing:0.08em" id="ratioLabel">
+      Proporção tokens / palavras
+    </div>
+  </div>
+
+  <!-- Visualização principal -->
+  <div class="card">
+    <div class="card-label">③ Visualização dos tokens</div>
+    <div class="mode-row">
+      <button class="mode-btn active" id="modeColor">🎨 Por cor</button>
+      <button class="mode-btn" id="modeType">📦 Por tipo</button>
+      <button class="mode-btn" id="modeSize">📏 Por tamanho</button>
+    </div>
+    <div class="token-display" id="tokenDisplay">
+      <span style="color:var(--muted);font-size:0.7rem">Digite um texto acima...</span>
+    </div>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <!-- IDs numéricos -->
+  <div class="card">
+    <div class="card-label">④ Como a IA realmente vê o texto — números, não palavras</div>
+    <p style="font-size:0.62rem;color:var(--muted);margin-bottom:12px;line-height:1.7;letter-spacing:0.04em">
+      Internamente, a LLM não vê letras. Cada token vira um <b style="color:var(--accent)">número inteiro</b> (ID) que representa uma posição no vocabulário da rede neural.
+    </p>
+    <div class="tok-id-strip" id="tokIdStrip">
+      <span style="color:var(--muted);font-size:0.65rem">Aguardando...</span>
+    </div>
+    <div style="margin-top:10px;font-size:0.58rem;color:var(--muted);letter-spacing:0.06em" id="vocabNote"></div>
+  </div>
+
+  <div class="two-col">
+
+    <!-- Tabela palavra → tokens -->
+    <div class="card">
+      <div class="card-label">⑤ Cada palavra → quantos tokens?</div>
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>PALAVRA</th>
+            <th>TOKENS</th>
+            <th style="text-align:right">QTD</th>
+          </tr>
+        </thead>
+        <tbody id="wordTable"></tbody>
+      </table>
+    </div>
+
+    <!-- Curiosidades -->
+    <div class="card">
+      <div class="card-label">⑥ Por que isso importa?</div>
+      <div class="curiosity-grid">
+        <div class="curiosity-card">
+          <div class="curiosity-title">💰 CUSTO</div>
+          <div class="curiosity-body">APIs de LLM cobram por <b>token</b>, não por palavra. Um texto em português custa <b>~30% mais</b> que em inglês.</div>
+        </div>
+        <div class="curiosity-card">
+          <div class="curiosity-title">📏 LIMITE</div>
+          <div class="curiosity-body">Todo modelo tem um limite de contexto em <b>tokens</b>. GPT-4 aceita até <b>128k tokens</b> (~300 páginas).</div>
+        </div>
+        <div class="curiosity-card">
+          <div class="curiosity-title">🔢 NÚMEROS</div>
+          <div class="curiosity-body">Cada dígito numérico geralmente vira <b>1 token separado</b>. "2024" = 4 tokens!</div>
+        </div>
+        <div class="curiosity-card">
+          <div class="curiosity-title">🌍 IDIOMA</div>
+          <div class="curiosity-body">Palavras em inglês costumam ter <b>menos tokens</b> pois o vocabulário foi treinado majoritariamente nessa língua.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Explainer -->
+  <div class="card">
+    <div class="card-label">Como a IA divide as palavras em tokens</div>
+    <div class="explainer" id="explainer">
+      A IA não lê letra por letra nem palavra por palavra.<br>
+      Ela usa um algoritmo chamado <b>BPE — Byte Pair Encoding</b> que aprende, durante o treinamento, quais sequências de letras aparecem mais juntas.<br><br>
+      As sequências mais comuns viram <b>tokens únicos</b>. As raras são quebradas em pedaços menores.<br>
+      Por isso <b>"programação"</b> pode virar <b>3 tokens</b> e <b>"cat"</b> vira apenas <b>1</b>.
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── Tokenizador simulado (BPE-like para pt-BR) ─────────────────────────────
+// Simula o comportamento do tokenizador GPT-4 / tiktoken cl100k_base
+// com foco em palavras portuguesas comuns e comportamentos conhecidos.
+
+const TOKEN_COLORS = ['--c0','--c1','--c2','--c3','--c4','--c5','--c6','--c7'];
+
+// Vocabulário simulado: palavra → array de tokens como strings
+// Baseado no comportamento real do cl100k (GPT-4)
+const KNOWN_WORDS = {
+  // Artigos / preposições (1 token)
+  'o': ['o'], 'a': ['a'], 'os': ['os'], 'as': ['as'],
+  'um': ['um'], 'uma': ['uma'], 'uns': ['uns'], 'umas': ['umas'],
+  'de': ['de'], 'do': ['do'], 'da': ['da'], 'dos': ['dos'], 'das': ['das'],
+  'em': ['em'], 'no': ['no'], 'na': ['na'], 'nos': ['nos'], 'nas': ['nas'],
+  'por': ['por'], 'para': ['para'], 'com': ['com'], 'sem': ['sem'],
+  'e': ['e'], 'ou': ['ou'], 'mas': ['mas'], 'que': ['que'], 'se': ['se'],
+  'não': ['não'], 'sim': ['sim'], 'já': ['já'], 'só': ['só'],
+  'é': ['é'], 'foi': ['foi'], 'ser': ['ser'], 'ter': ['ter'],
+  'mais': ['mais'], 'muito': ['muito'], 'bem': ['bem'], 'tudo': ['tudo'],
+  'isso': ['isso'], 'este': ['este'], 'esta': ['esta'], 'esse': ['esse'],
+  'essa': ['essa'], 'seu': ['seu'], 'sua': ['sua'], 'ele': ['ele'],
+  'ela': ['ela'], 'eles': ['eles'], 'elas': ['elas'], 'nós': ['nós'],
+  'você': ['você'], 'eu': ['eu'],
+
+  // Palavras comuns (1-2 tokens)
+  'mundo': ['mundo'], 'vida': ['vida'], 'tempo': ['tempo'],
+  'casa': ['casa'], 'Brasil': ['Brasil'], 'gente': ['gente'],
+  'coisa': ['coisa'], 'vez': ['vez'], 'ano': ['ano'], 'dia': ['dia'],
+  'olá': ['olá'], 'oi': ['oi'], 'como': ['como'], 'vai': ['vai'],
+  'aqui': ['aqui'], 'hoje': ['hoje'], 'agora': ['agora'], 'ainda': ['ainda'],
+  'então': ['então'], 'também': ['também'], 'quando': ['quando'],
+  'onde': ['onde'], 'porque': ['porque'], 'como': ['como'],
+  'país': ['país'], 'cidade': ['cidade'], 'escola': ['escola'],
+  'trabalho': ['trabalho'], 'projeto': ['projeto'],
+
+  // Palavras que se quebram em 2 tokens
+  'aprender': ['aprender'], 'nunca': ['nunca'], 'sempre': ['sempre'],
+  'depois': ['depois'], 'antes': ['antes'], 'entre': ['entre'],
+  'grande': ['grande'], 'pequeno': ['peque', 'no'],
+  'bonito': ['bon', 'ito'], 'rápido': ['rápido'],
+  'diferente': ['difer', 'ente'], 'importante': ['import', 'ante'],
+  'interessante': ['inter', 'essante'], 'necessário': ['neces', 'sário'],
+  'exemplo': ['exemplo'], 'número': ['número'],
+  'sistema': ['sistema'], 'programa': ['programa'],
+
+  // Palavras técnicas / longas (2-3 tokens)
+  'programação': ['program', 'ação'],
+  'inteligência': ['intel', 'igência'],
+  'artificial': ['artif', 'icial'],
+  'transformando': ['transform', 'ando'],
+  'diversidade': ['divers', 'idade'],
+  'cultural': ['cultural'],
+  'natural': ['natural'],
+  'tecnologia': ['tecnol', 'ogia'],
+  'algoritmo': ['algorit', 'mo'],
+  'computador': ['comput', 'ador'],
+  'internet': ['internet'],
+  'desenvolvimento': ['desenv', 'olvimento'],
+  'processamento': ['process', 'amento'],
+  'treinamento': ['trein', 'amento'],
+  'aprendizado': ['aprend', 'izado'],
+  'visualização': ['visual', 'ização'],
+  'comunicação': ['comunic', 'ação'],
+  'informação': ['inform', 'ação'],
+  'educação': ['educ', 'ação'],
+  'aplicação': ['aplic', 'ação'],
+  'geração': ['ger', 'ação'],
+  'ação': ['ação'],
+  'incrível': ['incrível'],
+  'especial': ['espec', 'ial'],
+  'geral': ['geral'],
+  'preciso': ['preciso'], 'praticar': ['praticar'],
+
+  // Inglês (bem tokenizado)
+  'the': ['the'], 'is': ['is'], 'are': ['are'], 'was': ['was'],
+  'cat': ['cat'], 'dog': ['dog'], 'house': ['house'],
+  'learning': ['learning'], 'machine': ['machine'],
+  'neural': ['neural'], 'network': ['network'],
+  'ChatGPT': ['Chat', 'G', 'PT'],
+  'GPT': ['G', 'PT'], 'AI': ['AI'], 'LLM': ['LL', 'M'],
+
+  // Números viram tokens individuais por dígito
+  // (tratados separado no código)
+
+  // Pontuação
+  ',': [','], '.': ['.'], '!': ['!'], '?': ['?'],
+  ':': [':'], ';': [';'], '-': ['-'], '(': ['('], ')': [')'],
+  '"': ['"'], "'": ["'"], '—': ['—'],
+};
+
+// Emojis: cada emoji = 1-3 tokens
+const EMOJI_TOKENS = {
+  '🤖': ['🤖'], '🌍': ['🌍'], '❤️': ['❤', '️'],
+  '😀': ['😀'], '🚀': ['🚀'], '⭐': ['⭐'],
+  '🎉': ['🎉'], '💡': ['💡'], '🔥': ['🔥'],
+};
+
+function tokenizeWord(word) {
+  const lower = word.toLowerCase();
+  // Emojis
+  for (const [em, toks] of Object.entries(EMOJI_TOKENS)) {
+    if (word === em) return toks.map(t => ({ text: t, type: 'emoji' }));
+  }
+  // Dicionário (case-insensitive mas retorna original)
+  if (KNOWN_WORDS[word]) {
+    return KNOWN_WORDS[word].map(t => ({ text: t, type: 'word' }));
+  }
+  if (KNOWN_WORDS[lower]) {
+    return KNOWN_WORDS[lower].map(t => ({ text: t, type: 'word' }));
+  }
+  // Números: cada dígito = 1 token
+  if (/^\d+$/.test(word)) {
+    return [...word].map(d => ({ text: d, type: 'number' }));
+  }
+  // Palavra desconhecida: heurística BPE-like
+  return heuristicTokenize(word);
+}
+
+function heuristicTokenize(word) {
+  // Simula BPE: sufixos comuns viram tokens separados
+  const suffixes = ['ção', 'ções', 'ção', 'ando', 'endo', 'indo',
+    'mente', 'ável', 'ível', 'oso', 'osa', 'ismo', 'ista',
+    'idade', 'dade', 'idade', 'agem', 'ação', 'ição',
+    'ador', 'ador', 'eiro', 'eira', 'ura', 'ura',
+    'ar', 'er', 'ir', 'al', 'el', 'il',
+    'ing', 'tion', 'ness', 'ful', 'less', 'ment', 'ize', 'ise',
+    'ado', 'ada', 'ido', 'ida',
+  ];
+
+  const prefixes = ['des', 're', 'in', 'un', 'pre', 'pro', 'trans',
+    'super', 'inter', 'sub', 'anti', 'auto', 'micro', 'macro',
+    'com', 'con', 'em', 'en'];
+
+  let result = [];
+  let rest = word;
+
+  // Tenta prefixo
+  for (const p of prefixes) {
+    if (rest.toLowerCase().startsWith(p) && rest.length > p.length + 2) {
+      result.push({ text: rest.slice(0, p.length), type: 'word' });
+      rest = rest.slice(p.length);
+      break;
+    }
+  }
+
+  // Tenta sufixo
+  for (const s of suffixes) {
+    if (rest.toLowerCase().endsWith(s) && rest.length > s.length + 2) {
+      result.push({ text: rest.slice(0, rest.length - s.length), type: 'word' });
+      result.push({ text: rest.slice(rest.length - s.length), type: 'word' });
+      rest = '';
+      break;
+    }
+  }
+
+  if (rest.length > 0) {
+    // Quebra palavras longas ao meio se nenhum padrão encontrado
+    if (result.length === 0 && rest.length > 7) {
+      const mid = Math.floor(rest.length / 2);
+      result.push({ text: rest.slice(0, mid), type: 'word' });
+      result.push({ text: rest.slice(mid), type: 'word' });
+    } else if (result.length === 0) {
+      result.push({ text: rest, type: 'word' });
+    } else {
+      result.push({ text: rest, type: 'word' });
+    }
+  }
+
+  return result;
+}
+
+// ID simulado (hash determinístico simples)
+function fakeId(tokenText) {
+  let hash = 0;
+  for (let i = 0; i < tokenText.length; i++) {
+    hash = ((hash << 5) - hash) + tokenText.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash) % 100000;
+}
+
+function splitIntoRawTokens(text) {
+  // Divide texto em palavras, pontuação, espaços e emojis
+  const emojiPattern = /(\p{Emoji_Presentation}|\p{Extended_Pictographic})/gu;
+  // Regex que captura: emojis, palavras (com acentos), números, pontuação
+  const pattern = /(\p{Emoji_Presentation}|\p{Extended_Pictographic}|\p{L}+|\d+|[^\s\p{L}\d])/gu;
+  const parts = [];
+  let match;
+  while ((match = pattern.exec(text)) !== null) {
+    parts.push(match[0]);
+  }
+  return parts;
+}
+
+function tokenize(text) {
+  if (!text.trim()) return [];
+  const parts = splitIntoRawTokens(text);
+  const result = [];
+  let colorIdx = 0;
+
+  for (const part of parts) {
+    const toks = tokenizeWord(part);
+    const color = TOKEN_COLORS[colorIdx % TOKEN_COLORS.length];
+    colorIdx++;
+
+    toks.forEach((tok, i) => {
+      result.push({
+        text: tok.text,
+        type: tok.type,
+        source: part,
+        color,
+        id: fakeId(tok.text),
+        isFirstOfWord: i === 0,
+        isLastOfWord: i === toks.length - 1,
+        wordTokCount: toks.length,
+      });
+    });
+  }
+  return result;
+}
+
+// ─── Modos de visualização ───────────────────────────────────────────────────
+let currentMode = 'color';
+
+function getTokenStyle(tok, mode) {
+  const colVar = `var(${tok.color})`;
+
+  if (mode === 'color') {
+    return {
+      bg: `rgba(${colorToRgb(tok.color)},0.12)`,
+      border: `rgba(${colorToRgb(tok.color)},0.4)`,
+      text: colVar,
+    };
+  }
+  if (mode === 'type') {
+    const map = {
+      word: { bg:'rgba(79,195,247,0.1)', border:'rgba(79,195,247,0.3)', text:'var(--accent3)' },
+      number: { bg:'rgba(255,215,0,0.1)', border:'rgba(255,215,0,0.3)', text:'var(--yellow)' },
+      punct: { bg:'rgba(255,107,53,0.1)', border:'rgba(255,107,53,0.3)', text:'var(--accent2)' },
+      emoji: { bg:'rgba(179,136,255,0.12)', border:'rgba(179,136,255,0.35)', text:'var(--purple)' },
+      space: { bg:'rgba(26,26,46,0.5)', border:'rgba(26,26,46,0.8)', text:'var(--muted)' },
+    };
+    const t = /[0-9]/.test(tok.text) ? 'number'
+      : /[.,!?:;()\-"'—]/.test(tok.text) ? 'punct'
+      : /\p{Emoji}/u.test(tok.text) ? 'emoji' : 'word';
+    return map[t] || map.word;
+  }
+  if (mode === 'size') {
+    const len = tok.text.length;
+    const c = len <= 1 ? 'rgba(255,68,102,0.15)' :
+              len <= 3 ? 'rgba(255,215,0,0.12)' :
+              len <= 6 ? 'rgba(0,255,136,0.1)' : 'rgba(79,195,247,0.1)';
+    const bc = len <= 1 ? 'rgba(255,68,102,0.5)' :
+               len <= 3 ? 'rgba(255,215,0,0.4)' :
+               len <= 6 ? 'rgba(0,255,136,0.35)' : 'rgba(79,195,247,0.3)';
+    const tc = len <= 1 ? 'var(--red)' :
+               len <= 3 ? 'var(--yellow)' :
+               len <= 6 ? 'var(--accent)' : 'var(--accent3)';
+    return { bg: c, border: bc, text: tc };
+  }
+  return { bg:'transparent', border:'var(--border)', text:'var(--text)' };
+}
+
+const COLOR_RGB = {
+  '--c0': '0,255,136', '--c1': '79,195,247', '--c2': '255,107,53',
+  '--c3': '179,136,255', '--c4': '255,215,0', '--c5': '255,128,171',
+  '--c6': '128,203,196', '--c7': '255,204,2',
+};
+function colorToRgb(v) { return COLOR_RGB[v] || '150,150,200'; }
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function render(text) {
+  const tokens = tokenize(text);
+  renderTokenDisplay(tokens);
+  renderStats(text, tokens);
+  renderIds(tokens);
+  renderWordTable(text, tokens);
+  renderLegend(currentMode);
+  renderExplainer(text, tokens);
+}
+
+function renderTokenDisplay(tokens) {
+  const el = document.getElementById('tokenDisplay');
+  el.innerHTML = '';
+  if (tokens.length === 0) {
+    el.innerHTML = '<span style="color:var(--muted);font-size:0.7rem">Digite um texto acima...</span>';
+    return;
+  }
+
+  tokens.forEach((tok, idx) => {
+    const style = getTokenStyle(tok, currentMode);
+    const span = document.createElement('span');
+    span.className = 'tok';
+    span.style.background = style.bg;
+    span.style.borderColor = style.border;
+    span.style.color = style.text;
+
+    // Espaço visível com símbolo
+    const displayText = tok.text === ' ' ? '·' : tok.text;
+
+    span.innerHTML = `${displayText}<sup class="tok-num">${idx + 1}</sup>
+      <div class="tok-tip">
+        Token #${idx + 1}<br>
+        Texto: "${tok.text}"<br>
+        ID: ${tok.id}<br>
+        Caracteres: ${tok.text.length}<br>
+        ${tok.wordTokCount > 1 ? `Parte de "${tok.source}" (${tok.wordTokCount} tokens)` : `Palavra inteira: "${tok.source}"`}
+      </div>`;
+
+    el.appendChild(span);
+  });
+}
+
+function renderStats(text, tokens) {
+  const chars = text.length;
+  const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+  const ntok = tokens.length;
+  const ratio = words > 0 ? (ntok / words).toFixed(1) : '—';
+
+  document.getElementById('statChars').textContent = chars;
+  document.getElementById('statWords').textContent = words;
+  document.getElementById('statTokens').textContent = ntok;
+  document.getElementById('statRatio').textContent = ratio;
+
+  // Custo estimado (GPT-4o: ~$0.005 por 1k tokens de input)
+  const cost = (ntok / 1000 * 0.005);
+  document.getElementById('statCost').textContent = cost < 0.001 ? '<$0.001' : '$' + cost.toFixed(4);
+  document.getElementById('statCost').title = `${ntok} tokens × $0.005/1k`;
+
+  // Ratio bar
+  const pct = Math.min(100, parseFloat(ratio) / 4 * 100);
+  document.getElementById('ratioBar').style.width = pct + '%';
+  const desc = ratio < 1.2 ? 'Ótimo — texto bem tokenizado (predominantemente inglês ou tokens comuns)' :
+               ratio < 1.8 ? 'Normal — proporção típica para português' :
+               ratio < 2.5 ? 'Moderado — palavras técnicas ou longas' :
+                             'Alto — muitos tokens por palavra (texto complexo ou muitos números)';
+  document.getElementById('ratioLabel').textContent = `${ratio} tokens/palavra — ${desc}`;
+}
+
+function renderIds(tokens) {
+  const el = document.getElementById('tokIdStrip');
+  el.innerHTML = '';
+  tokens.slice(0, 40).forEach((tok, i) => {
+    const span = document.createElement('span');
+    span.className = 'tok-id';
+    span.textContent = tok.id;
+    span.title = `"${tok.text}"`;
+    span.style.color = `var(${tok.color})`;
+    el.appendChild(span);
+  });
+  if (tokens.length > 40) {
+    const more = document.createElement('span');
+    more.style.cssText = 'color:var(--muted);font-size:0.58rem;align-self:center;margin-left:4px';
+    more.textContent = `+${tokens.length - 40} mais...`;
+    el.appendChild(more);
+  }
+  document.getElementById('vocabNote').textContent =
+    `Vocabulário do GPT-4: ~100.000 tokens possíveis (IDs de 0 a 99.999). Valores acima são simulados com a mesma lógica.`;
+}
+
+function renderWordTable(text, tokens) {
+  const tbody = document.getElementById('wordTable');
+  tbody.innerHTML = '';
+
+  // Agrupar tokens por palavra-fonte
+  const wordMap = new Map();
+  tokens.forEach(tok => {
+    if (!wordMap.has(tok.source)) wordMap.set(tok.source, []);
+    wordMap.get(tok.source).push(tok);
+  });
+
+  const entries = [...wordMap.entries()].slice(0, 12);
+  entries.forEach(([word, toks]) => {
+    const tr = document.createElement('tr');
+    const tokDisplay = toks.map(t =>
+      `<span style="color:var(${t.color});font-weight:700">"${t.text}"</span>`
+    ).join(' + ');
+    const countColor = toks.length === 1 ? 'var(--accent)' : toks.length === 2 ? 'var(--yellow)' : 'var(--accent2)';
+    tr.innerHTML = `
+      <td class="word-cell">${word}</td>
+      <td class="tokens-cell">${tokDisplay}</td>
+      <td class="count-cell" style="color:${countColor}">${toks.length}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  if (wordMap.size > 12) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="3" style="color:var(--muted);font-size:0.58rem;text-align:center;padding:8px">
+      +${wordMap.size - 12} palavras não mostradas</td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+function renderLegend(mode) {
+  const el = document.getElementById('legend');
+  el.innerHTML = '';
+
+  if (mode === 'color') {
+    el.innerHTML = '<span style="color:var(--muted);font-size:0.56rem;letter-spacing:0.08em">Cada cor representa uma palavra-origem diferente. Tokens da mesma palavra têm a mesma cor.</span>';
+  } else if (mode === 'type') {
+    const items = [
+      ['var(--accent3)', 'Palavra'],
+      ['var(--yellow)', 'Número'],
+      ['var(--accent2)', 'Pontuação'],
+      ['var(--purple)', 'Emoji'],
+    ];
+    items.forEach(([c, l]) => {
+      el.innerHTML += `<div class="legend-item"><div class="legend-dot" style="background:${c}20;border-color:${c}60"></div>${l}</div>`;
+    });
+  } else if (mode === 'size') {
+    const items = [
+      ['var(--red)', '1 char'],
+      ['var(--yellow)', '2–3 chars'],
+      ['var(--accent)', '4–6 chars'],
+      ['var(--accent3)', '7+ chars'],
+    ];
+    items.forEach(([c, l]) => {
+      el.innerHTML += `<div class="legend-item"><div class="legend-dot" style="background:${c}20;border-color:${c}60"></div>${l}</div>`;
+    });
+  }
+}
+
+function renderExplainer(text, tokens) {
+  const el = document.getElementById('explainer');
+  const ntok = tokens.length;
+  const words = text.trim().split(/\s+/).filter(w => w).length;
+  const multiTokWords = tokens.filter(t => t.wordTokCount > 1 && t.isFirstOfWord);
+  const ratio = words > 0 ? (ntok / words).toFixed(1) : 1;
+
+  let msg = `Este texto tem <b>${ntok} tokens</b> para <b>${words} palavras</b> — proporção de <b>${ratio} token/palavra</b>.<br><br>`;
+
+  if (multiTokWords.length > 0) {
+    const examples = multiTokWords.slice(0, 3).map(t =>
+      `<span class="hl">"${t.source}"</span> (${t.wordTokCount} tokens)`
+    ).join(', ');
+    msg += `Palavras que se dividiram: ${examples}.<br>`;
+    msg += `Isso acontece porque essas combinações de letras são menos comuns no vocabulário aprendido durante o treinamento.<br><br>`;
+  }
+
+  msg += `O algoritmo <b>BPE (Byte Pair Encoding)</b> aprende a fazer essas divisões automaticamente ao processar bilhões de textos.`;
+
+  if (text.match(/\d/)) {
+    msg += `<br><br>📌 <b>Nota sobre números:</b> cada dígito geralmente vira um token separado — por isso cálculos com números grandes são mais difíceis para a IA.`;
+  }
+
+  el.innerHTML = msg;
+}
+
+// ─── Modo de visualização ─────────────────────────────────────────────────────
+['modeColor','modeType','modeSize'].forEach(id => {
+  document.getElementById(id).onclick = () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    currentMode = id.replace('mode','').toLowerCase();
+    render(document.getElementById('inputText').value);
+  };
+});
+
+// ─── Input ────────────────────────────────────────────────────────────────────
+const inputEl = document.getElementById('inputText');
+let debounceTimer;
+
+inputEl.addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => render(inputEl.value), 180);
+});
+
+// ─── Exemplos ─────────────────────────────────────────────────────────────────
+document.querySelectorAll('.ex-btn').forEach(btn => {
+  btn.onclick = () => {
+    inputEl.value = btn.dataset.text;
+    render(inputEl.value);
+  };
+});
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+render(inputEl.value);
+</script>
+</body>
+</html>

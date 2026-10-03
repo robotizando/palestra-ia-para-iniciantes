@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bolinhas: a IA que aprende a vender bolo</title>
+<!--
+  Demonstração lúdica de uma rede de "bolinhas com um número dentro", sem contas na tela.
+  3 perguntas entram, 4 bolinhas no meio, 1 nota sai. "Ensinar com exemplos" treina de verdade
+  (por baixo), e as linhas engrossam/afinam. Arquivo único: funciona sozinho, inclusive no celular.
+  As fontes vêm do player da apresentação quando servido por apresentar.sh; sem elas, usa a do sistema.
+-->
+<link rel="stylesheet" href="../apresentacao/player/fontes.css">
+<style>
+  :root {
+    --creme: #FFF8EE; --marinho: #1F2A44; --laranja: #F28C28; --laranja-escuro: #9A4508;
+    --card: #FFFDF9; --borda: #EFD9B8; --texto: #4A5568; --azul: #5B7DB1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { min-height: 100%; }
+  body {
+    background: var(--creme); color: var(--marinho);
+    font-family: 'Nunito Sans', system-ui, Arial, sans-serif;
+    display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 2vh, 20px);
+    padding: clamp(12px, 3vh, 32px) 16px; min-height: 100vh;
+  }
+  h1 { font-family: 'Fredoka', system-ui, Arial, sans-serif; font-weight: 600; font-size: clamp(24px, 4.2vw, 56px); text-align: center; line-height: 1.1; }
+  .dica { color: var(--texto); font-size: clamp(14px, 1.6vw, 22px); text-align: center; }
+  svg { width: 100%; max-width: 1200px; flex: 1; min-height: 0; max-height: 56vh; display: block; touch-action: manipulation; }
+  .rotulo { font-family: 'Nunito Sans', system-ui, Arial, sans-serif; font-size: 30px; font-weight: 700; fill: var(--marinho); }
+  .num { font-family: 'Fredoka', system-ui, Arial, sans-serif; font-weight: 600; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+  .entrada { cursor: pointer; }
+  .entrada circle { transition: fill .25s; }
+  .linha { transition: stroke-width .3s, stroke .3s, opacity .3s; }
+  .bolinha { transition: fill .3s; }
+  .controles { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+  button {
+    font-family: 'Fredoka', system-ui, Arial, sans-serif; font-weight: 600; font-size: clamp(16px, 1.8vw, 26px);
+    border: 0; border-radius: 999px; padding: .6em 1.3em; cursor: pointer;
+  }
+  .ensinar { background: var(--laranja); color: var(--marinho); box-shadow: 0 5px 0 var(--laranja-escuro); }
+  .esquecer { background: var(--card); color: var(--marinho); border: 2px solid var(--borda); }
+  button:active { transform: translateY(3px); box-shadow: none; }
+  button:disabled { opacity: .5; cursor: default; }
+  .painel { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: stretch; }
+  .cartao {
+    background: var(--card); border: 2px solid var(--borda); border-radius: 18px; padding: .6em 1.1em;
+    font-size: clamp(14px, 1.6vw, 22px); color: var(--texto); min-width: 220px; text-align: center;
+  }
+  .cartao b { color: var(--marinho); }
+  .legenda { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; font-size: clamp(12px, 1.3vw, 18px); color: var(--texto); }
+  .legenda i { display: inline-block; width: 28px; height: 6px; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
+</style>
+</head>
+<body>
+<h1>Esse bolo vai vender bem?</h1>
+<p class="dica">Toque nas bolinhas da esquerda para responder sim ou não.</p>
+
+<svg id="rede" viewBox="40 40 1120 570" aria-label="Rede de bolinhas: três perguntas, quatro bolinhas no meio e uma nota"></svg>
+
+<div class="legenda">
+  <span><i style="background:var(--laranja)"></i>linha laranja: ajuda a vender</span>
+  <span><i style="background:var(--azul)"></i>linha azul: atrapalha</span>
+  <span>linha grossa: pesa muito</span>
+</div>
+
+<div class="controles">
+  <button class="ensinar" id="ensinar">Ensinar com exemplos</button>
+  <button class="esquecer" id="esquecer">Esquecer tudo</button>
+</div>
+
+<div class="painel">
+  <div class="cartao" id="exemplo">Ainda não viu nenhum exemplo: está <b>chutando</b>.</div>
+  <div class="cartao" id="acertos">Acerta <b>?</b> de 8 exemplos</div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---------- Os exemplos (o "caderno de vendas") ----------
+  // [chocolate, fim de semana, caro] → nota de 0 a 10
+  const PERGUNTAS = ['Tem chocolate?', 'É fim de semana?', 'Está caro?'];
+  const EXEMPLOS = [
+    { x: [0, 0, 0], nota: 3 }, { x: [1, 0, 0], nota: 6 },
+    { x: [0, 1, 0], nota: 5 }, { x: [1, 1, 0], nota: 9 },
+    { x: [0, 0, 1], nota: 1 }, { x: [1, 0, 1], nota: 3 },
+    { x: [0, 1, 1], nota: 4 }, { x: [1, 1, 1], nota: 8 },
+  ];
+  function descrever(ex) {
+    const partes = [
+      ex.x[0] ? 'de chocolate' : 'sem chocolate',
+      ex.x[1] ? 'no fim de semana' : 'em dia de semana',
+      ex.x[2] ? 'caro' : 'barato',
+    ];
+    return 'Bolo ' + partes.join(', ') + ' → vendeu <b>' + ex.nota + '</b>';
+  }
+
+  // ---------- A rede (as contas ficam aqui, escondidas) ----------
+  const N_ENT = 3, N_MEIO = 4;
+  let w1, b1, w2, b2;
+  const sig = (z) => 1 / (1 + Math.exp(-z));
+  function esquecer() {
+    const r = () => (Math.random() * 2 - 1) * 0.6;
+    w1 = Array.from({ length: N_MEIO }, () => Array.from({ length: N_ENT }, r));
+    b1 = Array.from({ length: N_MEIO }, r);
+    w2 = Array.from({ length: N_MEIO }, r);
+    b2 = r();
+  }
+  function calcular(x) {
+    const meio = w1.map((pesos, j) => sig(pesos.reduce((s, w, i) => s + w * x[i], b1[j])));
+    const saida = sig(meio.reduce((s, h, j) => s + w2[j] * h, b2));
+    return { meio, saida };
+  }
+  function treinarUmaVez(ex, passo) {
+    const { meio, saida } = calcular(ex.x);
+    const erroSaida = (saida - ex.nota / 10) * saida * (1 - saida);
+    for (let j = 0; j < N_MEIO; j++) {
+      const erroMeio = erroSaida * w2[j] * meio[j] * (1 - meio[j]);
+      w2[j] -= passo * erroSaida * meio[j];
+      for (let i = 0; i < N_ENT; i++) w1[j][i] -= passo * erroMeio * ex.x[i];
+      b1[j] -= passo * erroMeio;
+    }
+    b2 -= passo * erroSaida;
+  }
+  const nota = (saida) => Math.round(saida * 10);
+  const acertos = () => EXEMPLOS.filter((ex) => Math.abs(nota(calcular(ex.x).saida) - ex.nota) <= 1).length;
+
+  // ---------- Desenho ----------
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.getElementById('rede');
+  const POS_ENT = [150, 310, 470].map((y) => ({ x: 400, y }));
+  const POS_MEIO = [95, 245, 395, 545].map((y) => ({ x: 690, y }));
+  const POS_SAIDA = { x: 980, y: 310 };
+  const R = 52;
+  const entrada = [1, 0, 0];
+
+  function el(nome, attrs, pai) {
+    const e = document.createElementNS(NS, nome);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    (pai || svg).appendChild(e);
+    return e;
+  }
+
+  const gLinhas = el('g', {});
+  const gPulsos = el('g', {});
+  const linhas1 = POS_MEIO.map((m) => POS_ENT.map((e) => el('line', { class: 'linha', x1: e.x, y1: e.y, x2: m.x, y2: m.y, 'stroke-linecap': 'round' }, gLinhas)));
+  const linhas2 = POS_MEIO.map((m) => el('line', { class: 'linha', x1: m.x, y1: m.y, x2: POS_SAIDA.x, y2: POS_SAIDA.y, 'stroke-linecap': 'round' }, gLinhas));
+
+  const bolasEnt = POS_ENT.map((p, i) => {
+    const g = el('g', { class: 'entrada', role: 'button', tabindex: 0, 'aria-label': PERGUNTAS[i] });
+    el('text', { class: 'rotulo', x: p.x - R - 24, y: p.y - 14, 'text-anchor': 'end' }, g).textContent = PERGUNTAS[i];
+    const resp = el('text', { class: 'rotulo', x: p.x - R - 24, y: p.y + 24, 'text-anchor': 'end', style: 'font-weight:800' }, g);
+    const c = el('circle', { cx: p.x, cy: p.y, r: R, stroke: '#9A4508', 'stroke-width': 4 }, g);
+    const t = el('text', { class: 'num', x: p.x, y: p.y, 'font-size': 46 }, g);
+    const alternar = () => { entrada[i] = 1 - entrada[i]; atualizar(true); };
+    g.addEventListener('click', alternar);
+    g.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); alternar(); } });
+    return { c, t, resp };
+  });
+  const bolasMeio = POS_MEIO.map((p) => ({
+    c: el('circle', { class: 'bolinha', cx: p.x, cy: p.y, r: R - 6, fill: '#1F2A44' }),
+    t: el('text', { class: 'num', x: p.x, y: p.y, 'font-size': 42, fill: '#FFF8EE' }),
+  }));
+  const saidaC = el('circle', { class: 'bolinha', cx: POS_SAIDA.x, cy: POS_SAIDA.y, r: 86, fill: '#F28C28', stroke: '#9A4508', 'stroke-width': 5 });
+  const saidaT = el('text', { class: 'num', x: POS_SAIDA.x, y: POS_SAIDA.y - 6, 'font-size': 78, fill: '#1F2A44' });
+  el('text', { class: 'rotulo', x: POS_SAIDA.x, y: POS_SAIDA.y + 130, 'text-anchor': 'middle' }).textContent = 'nota de venda';
+  const carinha = el('text', { class: 'num', x: POS_SAIDA.x, y: POS_SAIDA.y - 130, 'font-size': 64 });
+
+  function corLinha(w) { return w >= 0 ? '#F28C28' : '#5B7DB1'; }
+  function grossura(w) { return Math.min(2 + Math.abs(w) * 3.2, 22); }
+
+  function desenhar() {
+    const { meio, saida } = calcular(entrada);
+    linhas1.forEach((linha, j) => linha.forEach((l, i) => {
+      l.setAttribute('stroke', corLinha(w1[j][i]));
+      l.setAttribute('stroke-width', grossura(w1[j][i]));
+      l.setAttribute('opacity', entrada[i] ? 0.9 : 0.18); // pergunta "não" não manda nada
+    }));
+    linhas2.forEach((l, j) => {
+      l.setAttribute('stroke', corLinha(w2[j]));
+      l.setAttribute('stroke-width', grossura(w2[j]));
+      l.setAttribute('opacity', 0.25 + 0.7 * meio[j]);
+    });
+    bolasEnt.forEach((b, i) => {
+      b.c.setAttribute('fill', entrada[i] ? '#F28C28' : '#FFFDF9');
+      b.t.textContent = entrada[i] ? '1' : '0';
+      b.t.setAttribute('fill', '#1F2A44');
+      b.resp.textContent = entrada[i] ? 'sim' : 'não';
+      b.resp.setAttribute('fill', entrada[i] ? '#9A4508' : '#4A5568');
+    });
+    bolasMeio.forEach((b, j) => {
+      b.t.textContent = Math.round(meio[j] * 9);
+      b.c.setAttribute('fill', 'rgb(' + [31, 42, 68].map((c, k) => Math.round(c + ([91, 125, 177][k] - c) * meio[j])).join(',') + ')');
+    });
+    const n = nota(saida);
+    saidaT.textContent = n;
+    carinha.textContent = n >= 7 ? '😄' : n >= 4 ? '😐' : '😟';
+    document.getElementById('acertos').innerHTML = 'Acerta <b>' + acertos() + '</b> de 8 exemplos';
+  }
+
+  // Bolinhas de luz andando pelas linhas quando uma resposta muda.
+  function pulsar() {
+    const caminhos = [];
+    POS_MEIO.forEach((m) => POS_ENT.forEach((e, i) => { if (entrada[i]) caminhos.push([e, m, 0]); }));
+    POS_MEIO.forEach((m) => caminhos.push([m, POS_SAIDA, 1]));
+    const pontos = caminhos.map(() => el('circle', { r: 9, fill: '#FFFDF9', stroke: '#9A4508', 'stroke-width': 3, opacity: 0 }, gPulsos));
+    const inicio = performance.now(), DUR = 450;
+    function quadro(t) {
+      const tempo = (t - inicio) / DUR; // 0–1 primeira camada, 1–2 segunda
+      caminhos.forEach(([a, b, etapa], k) => {
+        const f = tempo - etapa;
+        const visivel = f >= 0 && f <= 1;
+        pontos[k].setAttribute('opacity', visivel ? 1 : 0);
+        if (visivel) {
+          pontos[k].setAttribute('cx', a.x + (b.x - a.x) * f);
+          pontos[k].setAttribute('cy', a.y + (b.y - a.y) * f);
+        }
+      });
+      if (tempo < 2) requestAnimationFrame(quadro);
+      else { pontos.forEach((p) => p.remove()); desenhar(); }
+    }
+    requestAnimationFrame(quadro);
+  }
+
+  function atualizar(animar) {
+    if (animar && !treinando) pulsar(); else desenhar();
+  }
+
+  // ---------- Botões ----------
+  let treinando = false;
+  const botaoEnsinar = document.getElementById('ensinar');
+  const cartaoExemplo = document.getElementById('exemplo');
+
+  botaoEnsinar.addEventListener('click', () => {
+    if (treinando) return;
+    treinando = true;
+    botaoEnsinar.disabled = true;
+    // ~6 s de animação: uma passada pelos 8 exemplos por quadro, com passo pequeno para dar tempo de ver.
+    let rodada = 0;
+    const RODADAS = 75;
+    function passo() {
+      EXEMPLOS.forEach((ex) => treinarUmaVez(ex, 1));
+      if (rodada % 3 === 0) cartaoExemplo.innerHTML = 'Estudando: ' + descrever(EXEMPLOS[(rodada / 3) % EXEMPLOS.length]);
+      desenhar();
+      rodada++;
+      if (rodada < RODADAS) setTimeout(passo, 80);
+      else {
+        // Acabamento sem animação: nos testes, sempre termina acertando as 8 notas exatas.
+        for (let k = 0; k < 3000; k++) EXEMPLOS.forEach((ex2) => treinarUmaVez(ex2, 2.5));
+        treinando = false;
+        botaoEnsinar.disabled = false;
+        cartaoExemplo.innerHTML = 'Viu os exemplos. Agora <b>teste</b>: troque as respostas e veja a nota.';
+        desenhar();
+      }
+    }
+    passo();
+  });
+
+  document.getElementById('esquecer').addEventListener('click', () => {
+    if (treinando) return;
+    esquecer();
+    cartaoExemplo.innerHTML = 'Ainda não viu nenhum exemplo: está <b>chutando</b>.';
+    desenhar();
+  });
+
+  esquecer();
+  desenhar();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Como a IA Gera Texto</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+
+:root {
+  --bg: #080810;
+  --card: #0d0d1a;
+  --border: #1a1a2e;
+  --accent: #00ff88;
+  --accent2: #ff6b35;
+  --accent3: #4fc3f7;
+  --purple: #b388ff;
+  --pink: #ff80ab;
+  --yellow: #ffd700;
+  --text: #e0e0f0;
+  --muted: #4a4a6a;
+  --red: #ff4466;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+  padding: 20px 14px;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.4;
+}
+
+.header { max-width: 900px; margin: 0 auto 20px; }
+
+h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2rem, 6vw, 3rem);
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  text-shadow: 0 0 30px rgba(0,255,136,0.3);
+  line-height: 1;
+}
+
+.subtitle {
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  margin-top: 4px;
+}
+
+.layout {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.3;
+}
+
+.card-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+/* Prompt selector */
+.prompt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.prompt-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.62rem;
+  padding: 10px 12px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: left;
+  line-height: 1.4;
+  letter-spacing: 0.03em;
+}
+
+.prompt-btn:hover { border-color: var(--purple); color: var(--text); }
+.prompt-btn.active { border-color: var(--purple); color: var(--purple); background: rgba(179,136,255,0.07); }
+
+.prompt-display {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  line-height: 1.7;
+  color: var(--accent3);
+  letter-spacing: 0.04em;
+  min-height: 44px;
+}
+
+/* Controls row */
+.controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: all 0.15s;
+}
+
+.btn-go {
+  background: var(--accent);
+  color: #000;
+}
+.btn-go:hover { box-shadow: 0 0 20px rgba(0,255,136,0.4); transform: translateY(-1px); }
+.btn-go:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-reset {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.btn-reset:hover { border-color: var(--muted); color: var(--text); }
+
+.slider-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 130px;
+}
+
+.slider-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.6rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+
+.slider-val { font-weight: 700; }
+
+input[type=range] { width: 100%; accent-color: var(--accent); }
+
+/* Token stream */
+.token-stream {
+  min-height: 80px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.82rem;
+  line-height: 1.9;
+}
+
+.token {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  transition: all 0.3s;
+  position: relative;
+  cursor: default;
+  letter-spacing: 0.03em;
+}
+
+.token-prompt {
+  color: var(--accent3);
+  border-color: rgba(79,195,247,0.25);
+  background: rgba(79,195,247,0.06);
+}
+
+.token-generated {
+  color: var(--accent);
+  border-color: rgba(0,255,136,0.3);
+  background: rgba(0,255,136,0.07);
+}
+
+.token-current {
+  color: #000;
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 14px rgba(0,255,136,0.5);
+  animation: pulse 0.6s ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  60% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.cursor-blink {
+  display: inline-block;
+  width: 3px;
+  height: 1.1em;
+  background: var(--accent);
+  border-radius: 2px;
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+  margin-left: 4px;
+}
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* Attention heatmap */
+.attention-section { margin-top: 4px; }
+
+.attention-label-row {
+  font-size: 0.58rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+
+.attention-grid-wrap {
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.attention-grid {
+  display: inline-grid;
+  gap: 3px;
+}
+
+.att-cell {
+  width: 36px;
+  height: 36px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.52rem;
+  font-weight: 700;
+  transition: all 0.4s ease;
+  border: 1px solid rgba(255,255,255,0.04);
+  letter-spacing: 0;
+  color: rgba(0,0,0,0.7);
+  cursor: default;
+}
+
+.att-row-label {
+  font-size: 0.55rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 6px;
+  white-space: nowrap;
+  height: 36px;
+}
+
+.att-col-label {
+  font-size: 0.52rem;
+  color: var(--muted);
+  width: 36px;
+  text-align: center;
+  padding-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Candidate tokens */
+.candidates-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.candidate-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:none; } }
+
+.cand-token {
+  font-size: 0.72rem;
+  font-weight: 700;
+  min-width: 80px;
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.cand-bar-wrap {
+  flex: 1;
+  height: 22px;
+  background: var(--bg);
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  position: relative;
+}
+
+.cand-bar {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: rgba(0,0,0,0.8);
+  white-space: nowrap;
+}
+
+.cand-pct {
+  min-width: 42px;
+  text-align: right;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.cand-chosen {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.cand-chosen .cand-bar-wrap { border-color: var(--accent); }
+
+/* Steps legend */
+.step-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.step-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.58rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+.step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Info strip */
+.info-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.info-box {
+  flex: 1;
+  min-width: 130px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.info-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+}
+
+.info-lbl {
+  font-size: 0.53rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-top: 3px;
+}
+
+/* Explainer box */
+.explainer {
+  background: rgba(179,136,255,0.06);
+  border: 1px solid rgba(179,136,255,0.2);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 0.65rem;
+  color: var(--purple);
+  letter-spacing: 0.05em;
+  line-height: 1.8;
+  min-height: 48px;
+  transition: all 0.3s;
+}
+
+.explainer b { color: #fff; }
+
+/* Two col */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 620px) {
+  .two-col { grid-template-columns: 1fr; }
+}
+
+/* temp display */
+.temp-desc {
+  font-size: 0.6rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 4px;
+  letter-spacing: 0.06em;
+  min-height: 18px;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Como a IA Gera Texto</h1>
+  <p class="subtitle">// visualizador didático · geração token a token · atenção simplificada</p>
+</div>
+
+<div class="layout">
+
+  <!-- PASSO 1: Escolha o prompt -->
+  <div class="card">
+    <div class="card-label">① Escolha uma frase para completar</div>
+    <div class="prompt-grid" id="promptGrid"></div>
+    <div class="prompt-display" id="promptDisplay">Selecione uma frase acima...</div>
+  </div>
+
+  <!-- PASSO 2: Controles -->
+  <div class="card">
+    <div class="card-label">② Controles</div>
+    <div class="controls-row">
+      <button class="btn btn-go" id="btnGen" disabled>▶ GERAR</button>
+      <button class="btn btn-reset" id="btnReset">↺ RESET</button>
+
+      <div class="slider-wrap">
+        <div class="slider-top">
+          TEMPERATURA
+          <span class="slider-val" id="tempV" style="color:var(--yellow)">0.8</span>
+        </div>
+        <input type="range" id="tempSlider" min="0.1" max="2.0" step="0.1" value="0.8">
+        <div class="temp-desc" id="tempDesc">equilibrado — criativo mas coerente</div>
+      </div>
+
+      <div class="slider-wrap">
+        <div class="slider-top">
+          VELOCIDADE
+          <span class="slider-val" id="speedV" style="color:var(--muted)">médio</span>
+        </div>
+        <input type="range" id="speedSlider" min="1" max="3" step="1" value="2">
+      </div>
+    </div>
+  </div>
+
+  <!-- PASSO 3: Saída de texto -->
+  <div class="card">
+    <div class="card-label">③ Texto gerado — token por token</div>
+
+    <div class="step-legend">
+      <div class="step-pill"><div class="step-dot" style="background:var(--accent3)"></div> Prompt original</div>
+      <div class="step-pill"><div class="step-dot" style="background:var(--accent)"></div> Texto gerado</div>
+      <div class="step-pill"><div class="step-dot" style="background:var(--yellow); box-shadow:0 0 6px rgba(255,215,0,0.5)"></div> Token atual</div>
+    </div>
+
+    <div class="token-stream" id="tokenStream">
+      <span style="color:var(--muted); font-size:0.7rem">Selecione um prompt e clique em GERAR...</span>
+    </div>
+  </div>
+
+  <div class="two-col">
+
+    <!-- Atenção -->
+    <div class="card">
+      <div class="card-label">④ Atenção — quais palavras a IA está "olhando"</div>
+      <div class="attention-label-row" id="attLabelRow">
+        A IA olha para os tokens anteriores para escolher o próximo.
+      </div>
+      <div class="attention-grid-wrap">
+        <div id="attGrid"></div>
+      </div>
+    </div>
+
+    <!-- Candidatos -->
+    <div class="card">
+      <div class="card-label">⑤ Próxima palavra — candidatas e probabilidades</div>
+      <div class="candidates-wrap" id="candidates">
+        <div style="color:var(--muted); font-size:0.65rem">Aguardando geração...</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Info strip -->
+  <div class="card">
+    <div class="card-label">Estatísticas</div>
+    <div class="info-strip">
+      <div class="info-box">
+        <div class="info-val" id="statTokens" style="color:var(--accent3)">0</div>
+        <div class="info-lbl">TOKENS NO PROMPT</div>
+      </div>
+      <div class="info-box">
+        <div class="info-val" id="statGenerated" style="color:var(--accent)">0</div>
+        <div class="info-lbl">TOKENS GERADOS</div>
+      </div>
+      <div class="info-box">
+        <div class="info-val" id="statStep" style="color:var(--yellow)">—</div>
+        <div class="info-lbl">PASSO ATUAL</div>
+      </div>
+      <div class="info-box">
+        <div class="info-val" id="statTopProb" style="color:var(--accent2)">—</div>
+        <div class="info-lbl">PROB. TOP-1</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Explainer -->
+  <div class="card">
+    <div class="card-label">O que está acontecendo agora</div>
+    <div class="explainer" id="explainer">
+      Selecione um prompt e clique em <b>GERAR</b> para ver como a IA constrói o texto palavra por palavra.
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── Dados: prompts e suas continuações simuladas ───────────────────────────
+const PROMPTS = [
+  {
+    label: '"O Brasil é um país..."',
+    tokens: ['O', 'Brasil', 'é', 'um', 'país'],
+    continuations: [
+      {
+        token: 'de',
+        candidates: [
+          { word: 'de', prob: 0.42 },
+          { word: 'muito', prob: 0.24 },
+          { word: 'com', prob: 0.18 },
+          { word: 'grande', prob: 0.10 },
+          { word: 'rico', prob: 0.06 },
+        ],
+        attention: [0.05, 0.15, 0.08, 0.22, 0.50],
+        explain: 'A palavra <b>"país"</b> tem alta atenção — a IA espera um complemento após "um país de..."'
+      },
+      {
+        token: 'grande',
+        candidates: [
+          { word: 'grande', prob: 0.38 },
+          { word: 'muita', prob: 0.29 },
+          { word: 'diversidade', prob: 0.19 },
+          { word: 'incrível', prob: 0.09 },
+          { word: 'imensa', prob: 0.05 },
+        ],
+        attention: [0.04, 0.10, 0.06, 0.12, 0.44, 0.24],
+        explain: '<b>"país de"</b> cria expectativa de um adjetivo. A IA ainda presta atenção em "Brasil".'
+      },
+      {
+        token: 'diversidade',
+        candidates: [
+          { word: 'diversidade', prob: 0.51 },
+          { word: 'beleza', prob: 0.22 },
+          { word: 'riqueza', prob: 0.14 },
+          { word: 'cultura', prob: 0.09 },
+          { word: 'extensão', prob: 0.04 },
+        ],
+        attention: [0.03, 0.18, 0.05, 0.08, 0.30, 0.20, 0.16],
+        explain: 'Com <b>"grande"</b> no contexto, a IA sabe que vem um substantivo. "Diversidade" é muito comum nesse padrão.'
+      },
+      {
+        token: 'cultural',
+        candidates: [
+          { word: 'cultural', prob: 0.44 },
+          { word: 'natural', prob: 0.28 },
+          { word: 'e', prob: 0.17 },
+          { word: 'incrível', prob: 0.07 },
+          { word: 'única', prob: 0.04 },
+        ],
+        attention: [0.02, 0.12, 0.04, 0.06, 0.18, 0.10, 0.32, 0.16],
+        explain: '<b>"diversidade"</b> quase sempre vem seguida de um adjetivo. A atenção está forte nessa palavra.'
+      },
+      {
+        token: 'e',
+        candidates: [
+          { word: 'e', prob: 0.56 },
+          { word: ',', prob: 0.22 },
+          { word: '.', prob: 0.14 },
+          { word: 'que', prob: 0.05 },
+          { word: 'com', prob: 0.03 },
+        ],
+        attention: [0.04, 0.08, 0.05, 0.12, 0.22, 0.14, 0.18, 0.12, 0.05],
+        explain: 'A sequência <b>"diversidade cultural"</b> frequentemente continua com "e" para listar outra característica.'
+      },
+      {
+        token: 'natural',
+        candidates: [
+          { word: 'natural', prob: 0.47 },
+          { word: 'histórica', prob: 0.22 },
+          { word: 'social', prob: 0.16 },
+          { word: 'linguística', prob: 0.10 },
+          { word: 'artística', prob: 0.05 },
+        ],
+        attention: [0.03, 0.14, 0.04, 0.06, 0.26, 0.12, 0.22, 0.08, 0.03, 0.02],
+        explain: 'A IA entendeu o <b>padrão de listagem</b>: "diversidade X e Y". Olha para "cultural" para encontrar um par.'
+      },
+    ]
+  },
+  {
+    label: '"A inteligência artificial..."',
+    tokens: ['A', 'inteligência', 'artificial'],
+    continuations: [
+      {
+        token: 'está',
+        candidates: [
+          { word: 'está', prob: 0.38 },
+          { word: 'pode', prob: 0.27 },
+          { word: 'é', prob: 0.20 },
+          { word: 'vai', prob: 0.10 },
+          { word: 'tem', prob: 0.05 },
+        ],
+        attention: [0.08, 0.52, 0.40],
+        explain: 'Forte atenção em <b>"inteligência artificial"</b> como unidade. A IA busca um verbo adequado para esse sujeito.'
+      },
+      {
+        token: 'transformando',
+        candidates: [
+          { word: 'transformando', prob: 0.45 },
+          { word: 'mudando', prob: 0.24 },
+          { word: 'revolucionando', prob: 0.18 },
+          { word: 'presente', prob: 0.08 },
+          { word: 'crescendo', prob: 0.05 },
+        ],
+        attention: [0.04, 0.28, 0.22, 0.46],
+        explain: '<b>"está"</b> indica presente contínuo. A IA procura um gerúndio. "Transformando" é frequente com IA.'
+      },
+      {
+        token: 'a',
+        candidates: [
+          { word: 'a', prob: 0.52 },
+          { word: 'o', prob: 0.21 },
+          { word: 'nossa', prob: 0.16 },
+          { word: 'cada', prob: 0.07 },
+          { word: 'rápido', prob: 0.04 },
+        ],
+        attention: [0.03, 0.18, 0.14, 0.28, 0.37],
+        explain: '"Está transformando ___ " — a IA espera um artigo antes do objeto. Alta atenção no verbo.'
+      },
+      {
+        token: 'forma',
+        candidates: [
+          { word: 'forma', prob: 0.41 },
+          { word: 'sociedade', prob: 0.28 },
+          { word: 'vida', prob: 0.19 },
+          { word: 'indústria', prob: 0.09 },
+          { word: 'economia', prob: 0.03 },
+        ],
+        attention: [0.03, 0.14, 0.10, 0.20, 0.26, 0.27],
+        explain: '"transformando a ___ " — <b>"a"</b> é artigo feminino, então vem um substantivo feminino. "Forma" é muito comum.'
+      },
+      {
+        token: 'como',
+        candidates: [
+          { word: 'como', prob: 0.58 },
+          { word: 'que', prob: 0.22 },
+          { word: 'em', prob: 0.12 },
+          { word: 'de', prob: 0.06 },
+          { word: 'pela', prob: 0.02 },
+        ],
+        attention: [0.02, 0.10, 0.08, 0.18, 0.20, 0.18, 0.24],
+        explain: '"transformando a forma ___ " — "forma como" é uma expressão muito consolidada na língua portuguesa.'
+      },
+      {
+        token: 'vivemos',
+        candidates: [
+          { word: 'vivemos', prob: 0.44 },
+          { word: 'trabalhamos', prob: 0.26 },
+          { word: 'aprendemos', prob: 0.18 },
+          { word: 'pensamos', prob: 0.08 },
+          { word: 'comunicamos', prob: 0.04 },
+        ],
+        attention: [0.02, 0.22, 0.16, 0.14, 0.20, 0.14, 0.08, 0.04],
+        explain: '"a forma como ___ " — a IA olha para <b>"transformando"</b> e <b>"forma como"</b> para escolher um verbo humano.'
+      },
+    ]
+  },
+  {
+    label: '"Era uma vez um robô..."',
+    tokens: ['Era', 'uma', 'vez', 'um', 'robô'],
+    continuations: [
+      {
+        token: 'que',
+        candidates: [
+          { word: 'que', prob: 0.62 },
+          { word: 'chamado', prob: 0.18 },
+          { word: 'muito', prob: 0.11 },
+          { word: 'pequeno', prob: 0.06 },
+          { word: 'curioso', prob: 0.03 },
+        ],
+        attention: [0.06, 0.04, 0.08, 0.12, 0.70],
+        explain: 'Padrão <b>"era uma vez um X que..."</b> está profundamente gravado no treinamento. "robô" atrai "que" como pronome relativo.'
+      },
+      {
+        token: 'sonhava',
+        candidates: [
+          { word: 'sonhava', prob: 0.38 },
+          { word: 'queria', prob: 0.29 },
+          { word: 'vivia', prob: 0.18 },
+          { word: 'trabalhava', prob: 0.10 },
+          { word: 'morava', prob: 0.05 },
+        ],
+        attention: [0.08, 0.06, 0.10, 0.14, 0.32, 0.30],
+        explain: '"robô que ___ " — a IA entra em modo narrativo. "Sonhava" cria tensão dramática, frequente em contos.'
+      },
+      {
+        token: 'em',
+        candidates: [
+          { word: 'em', prob: 0.55 },
+          { word: 'com', prob: 0.24 },
+          { word: 'um', prob: 0.13 },
+          { word: 'ser', prob: 0.06 },
+          { word: 'ter', prob: 0.02 },
+        ],
+        attention: [0.04, 0.04, 0.06, 0.08, 0.20, 0.42, 0.16],
+        explain: '<b>"sonhava"</b> em português quase sempre vem com "sonhava em" ou "sonhava com". Ambos são válidos.'
+      },
+      {
+        token: 'ser',
+        candidates: [
+          { word: 'ser', prob: 0.67 },
+          { word: 'um', prob: 0.18 },
+          { word: 'voar', prob: 0.09 },
+          { word: 'conhecer', prob: 0.04 },
+          { word: 'ir', prob: 0.02 },
+        ],
+        attention: [0.03, 0.03, 0.05, 0.06, 0.14, 0.26, 0.12, 0.31],
+        explain: '"sonhava em ___ " — claramente vem um infinitivo. "Ser" é o mais evocativo para um robô (querer ser humano).'
+      },
+      {
+        token: 'humano',
+        candidates: [
+          { word: 'humano', prob: 0.58 },
+          { word: 'livre', prob: 0.20 },
+          { word: 'feliz', prob: 0.13 },
+          { word: 'real', prob: 0.06 },
+          { word: 'artista', prob: 0.03 },
+        ],
+        attention: [0.06, 0.04, 0.06, 0.10, 0.18, 0.18, 0.10, 0.16, 0.12],
+        explain: 'A IA <b>associa robô + sonho + ser</b> com o arquétipo clássico de ficção científica: o robô que quer ser humano.'
+      },
+      {
+        token: '.',
+        candidates: [
+          { word: '.', prob: 0.52 },
+          { word: ',', prob: 0.28 },
+          { word: 'e', prob: 0.14 },
+          { word: 'mas', prob: 0.04 },
+          { word: 'para', prob: 0.02 },
+        ],
+        attention: [0.10, 0.06, 0.08, 0.12, 0.18, 0.14, 0.12, 0.12, 0.06, 0.02],
+        explain: 'Após <b>"ser humano"</b> a frase está semanticamente completa. A pontuação fecha a oração de forma natural.'
+      },
+    ]
+  },
+  {
+    label: '"Para aprender programação..."',
+    tokens: ['Para', 'aprender', 'programação'],
+    continuations: [
+      {
+        token: 'é',
+        candidates: [
+          { word: 'é', prob: 0.44 },
+          { word: 'você', prob: 0.28 },
+          { word: 'precisa', prob: 0.18 },
+          { word: 'o', prob: 0.06 },
+          { word: 'basta', prob: 0.04 },
+        ],
+        attention: [0.10, 0.32, 0.58],
+        explain: 'Alta atenção em <b>"aprender programação"</b>. A IA detecta um contexto de conselho/instrução e busca um verbo.'
+      },
+      {
+        token: 'preciso',
+        candidates: [
+          { word: 'preciso', prob: 0.46 },
+          { word: 'necessário', prob: 0.28 },
+          { word: 'fundamental', prob: 0.15 },
+          { word: 'importante', prob: 0.08 },
+          { word: 'essencial', prob: 0.03 },
+        ],
+        attention: [0.06, 0.20, 0.38, 0.36],
+        explain: '"Para X é ___ " — estrutura de recomendação. "é preciso" e "é necessário" são igualmente comuns.'
+      },
+      {
+        token: 'praticar',
+        candidates: [
+          { word: 'praticar', prob: 0.52 },
+          { word: 'estudar', prob: 0.24 },
+          { word: 'persistência', prob: 0.14 },
+          { word: 'dedicação', prob: 0.07 },
+          { word: 'código', prob: 0.03 },
+        ],
+        attention: [0.06, 0.28, 0.32, 0.22, 0.12],
+        explain: '"é preciso ___ " pede um infinitivo. <b>"praticar"</b> é o conselho mais frequente em textos sobre aprendizado.'
+      },
+      {
+        token: 'muito',
+        candidates: [
+          { word: 'muito', prob: 0.48 },
+          { word: 'diariamente', prob: 0.24 },
+          { word: 'bastante', prob: 0.18 },
+          { word: 'sempre', prob: 0.07 },
+          { word: 'bem', prob: 0.03 },
+        ],
+        attention: [0.04, 0.16, 0.24, 0.22, 0.26, 0.08],
+        explain: '"praticar ___ " — o modificador mais comum é "muito" ou "diariamente". Atenção forte no verbo + objeto anterior.'
+      },
+      {
+        token: 'e',
+        candidates: [
+          { word: 'e', prob: 0.54 },
+          { word: ',', prob: 0.26 },
+          { word: '.', prob: 0.12 },
+          { word: 'para', prob: 0.05 },
+          { word: 'com', prob: 0.03 },
+        ],
+        attention: [0.04, 0.12, 0.18, 0.16, 0.18, 0.14, 0.18],
+        explain: 'A IA detecta que a frase ainda não está completa semanticamente. "e" introduz uma segunda recomendação.'
+      },
+      {
+        token: 'nunca',
+        candidates: [
+          { word: 'nunca', prob: 0.40 },
+          { word: 'sempre', prob: 0.28 },
+          { word: 'não', prob: 0.18 },
+          { word: 'ter', prob: 0.10 },
+          { word: 'buscar', prob: 0.04 },
+        ],
+        attention: [0.04, 0.14, 0.18, 0.12, 0.14, 0.12, 0.14, 0.12],
+        explain: '"praticar muito e ___ " — padrão de conselho com duas partes. "nunca desistir" é uma frase muito consolidada.'
+      },
+    ]
+  }
+];
+
+// ─── Estado ─────────────────────────────────────────────────────────────────
+let selectedPrompt = null;
+let generating = false;
+let step = 0;
+let allTokens = [];
+
+// ─── UI: Prompt buttons ──────────────────────────────────────────────────────
+const promptGrid = document.getElementById('promptGrid');
+PROMPTS.forEach((p, idx) => {
+  const btn = document.createElement('button');
+  btn.className = 'prompt-btn';
+  btn.textContent = p.label;
+  btn.onclick = () => selectPrompt(idx);
+  promptGrid.appendChild(btn);
+});
+
+function selectPrompt(idx) {
+  if (generating) return;
+  selectedPrompt = PROMPTS[idx];
+  document.querySelectorAll('.prompt-btn').forEach((b, i) => {
+    b.classList.toggle('active', i === idx);
+  });
+  document.getElementById('promptDisplay').textContent = selectedPrompt.tokens.join(' ') + ' ...';
+  document.getElementById('btnGen').disabled = false;
+  resetVisuals();
+  renderPromptTokens();
+  document.getElementById('statTokens').textContent = selectedPrompt.tokens.length;
+  document.getElementById('statGenerated').textContent = '0';
+  document.getElementById('statStep').textContent = '—';
+  document.getElementById('statTopProb').textContent = '—';
+  document.getElementById('explainer').innerHTML =
+    `Prompt carregado: <b>"${selectedPrompt.tokens.join(' ')}"</b>.<br>Ajuste a temperatura e clique em <b>GERAR</b> para ver a IA completar a frase.`;
+}
+
+// ─── Temperatura ─────────────────────────────────────────────────────────────
+const tempSlider = document.getElementById('tempSlider');
+const tempV = document.getElementById('tempV');
+const tempDesc = document.getElementById('tempDesc');
+
+const TEMP_DESCS = {
+  0.1: 'determinístico — sempre a palavra mais provável',
+  0.2: 'muito previsível — pouca variação',
+  0.3: 'bastante focado',
+  0.4: 'conservador',
+  0.5: 'equilibrado — ligeiramente conservador',
+  0.6: 'equilibrado',
+  0.7: 'equilibrado — um pouco criativo',
+  0.8: 'equilibrado — criativo mas coerente',
+  0.9: 'criativo',
+  1.0: 'temperatura padrão — comportamento base',
+  1.1: 'mais aleatório',
+  1.2: 'criativo — possível variação',
+  1.3: 'bastante aleatório',
+  1.4: 'alta criatividade — menor coerência',
+  1.5: 'experimental — erros possíveis',
+  1.6: 'muito aleatório',
+  1.7: 'quase caótico',
+  1.8: 'raramente coerente',
+  1.9: 'extremamente aleatório',
+  2.0: 'máximo — resultados imprevisíveis',
+};
+
+tempSlider.oninput = () => {
+  const v = parseFloat(tempSlider.value);
+  tempV.textContent = v.toFixed(1);
+  const key = Math.round(v * 10) / 10;
+  tempDesc.textContent = TEMP_DESCS[key] || '';
+
+  const pct = (v - 0.1) / 1.9;
+  const r = Math.round(pct * 255);
+  const g = Math.round((1 - pct) * 200);
+  tempV.style.color = `rgb(${r},${g},50)`;
+};
+
+// ─── Velocidade ──────────────────────────────────────────────────────────────
+const speedSlider = document.getElementById('speedSlider');
+const speedV = document.getElementById('speedV');
+const SPEEDS = { 1: { label: 'devagar', delay: 2200 }, 2: { label: 'médio', delay: 1200 }, 3: { label: 'rápido', delay: 600 } };
+speedSlider.oninput = () => {
+  speedV.textContent = SPEEDS[speedSlider.value].label;
+};
+
+function getDelay() { return SPEEDS[speedSlider.value].delay; }
+
+// ─── Tokens visuais ──────────────────────────────────────────────────────────
+function renderPromptTokens() {
+  if (!selectedPrompt) return;
+  allTokens = [...selectedPrompt.tokens];
+  const stream = document.getElementById('tokenStream');
+  stream.innerHTML = '';
+  allTokens.forEach(t => {
+    const el = document.createElement('span');
+    el.className = 'token token-prompt';
+    el.textContent = t;
+    stream.appendChild(el);
+  });
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor-blink';
+  cursor.id = 'cursor';
+  stream.appendChild(cursor);
+}
+
+function addGeneratedToken(word) {
+  const stream = document.getElementById('tokenStream');
+  const cursor = document.getElementById('cursor');
+
+  // Remove cursor
+  if (cursor) cursor.remove();
+
+  allTokens.push(word);
+
+  const el = document.createElement('span');
+  el.className = 'token token-current';
+  el.textContent = word;
+  stream.appendChild(el);
+
+  // Add new cursor after brief moment
+  setTimeout(() => {
+    el.className = 'token token-generated';
+    const newCursor = document.createElement('span');
+    newCursor.className = 'cursor-blink';
+    newCursor.id = 'cursor';
+    stream.appendChild(newCursor);
+    stream.scrollLeft = stream.scrollWidth;
+  }, 400);
+}
+
+// ─── Atenção visual ──────────────────────────────────────────────────────────
+function renderAttention(tokens, attWeights) {
+  const grid = document.getElementById('attGrid');
+  grid.innerHTML = '';
+
+  const n = tokens.length;
+  const targetTok = tokens[n - 1]; // último token gerado (quem atende)
+
+  // Label info
+  document.getElementById('attLabelRow').innerHTML =
+    `Token atual <b style="color:var(--accent)">"${targetTok}"</b> prestando atenção nos tokens anteriores:`;
+
+  // Grid layout: col labels + cells
+  const cols = n;
+  const totalCols = cols + 1; // +1 para row label
+
+  const gridEl = document.createElement('div');
+  gridEl.style.display = 'inline-grid';
+  gridEl.style.gridTemplateColumns = `80px repeat(${cols}, 36px)`;
+  gridEl.style.gap = '3px';
+  gridEl.style.alignItems = 'center';
+
+  // Header row: empty cell + col labels
+  const emptyCorner = document.createElement('div');
+  gridEl.appendChild(emptyCorner);
+
+  tokens.forEach(t => {
+    const lbl = document.createElement('div');
+    lbl.className = 'att-col-label';
+    lbl.textContent = t;
+    lbl.title = t;
+    gridEl.appendChild(lbl);
+  });
+
+  // Data row
+  const rowLabel = document.createElement('div');
+  rowLabel.className = 'att-row-label';
+  rowLabel.style.color = 'var(--accent)';
+  rowLabel.style.fontSize = '0.6rem';
+  rowLabel.textContent = `"${targetTok}"`;
+  gridEl.appendChild(rowLabel);
+
+  attWeights.forEach((w, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'att-cell';
+
+    // Color: purple → yellow gradient by weight
+    const intensity = Math.round(w * 255);
+    const r = Math.round(w * 255);
+    const g = Math.round(w * 200);
+    const b = Math.round((1 - w) * 255);
+    cell.style.background = `rgba(${r},${g},${b},${0.3 + w * 0.7})`;
+    cell.style.borderColor = w > 0.3 ? `rgba(${r},${g},${b},0.6)` : 'rgba(255,255,255,0.04)';
+    cell.style.color = w > 0.35 ? 'rgba(0,0,0,0.85)' : 'rgba(200,200,255,0.6)';
+    cell.textContent = w >= 0.1 ? (w * 100).toFixed(0) + '%' : '';
+    cell.title = `"${tokens[i]}" → ${(w * 100).toFixed(1)}%`;
+    gridEl.appendChild(cell);
+  });
+
+  grid.appendChild(gridEl);
+}
+
+// ─── Candidatos ──────────────────────────────────────────────────────────────
+function applyTemperature(candidates, temp) {
+  // Aplica temperatura preservando a ordem original dos candidatos.
+  // Temperatura baixa → concentra probabilidade no top-1.
+  // Temperatura alta  → distribui mais uniformemente.
+  const logits = candidates.map(c => Math.log(c.prob + 1e-8) / temp);
+  const maxLogit = Math.max(...logits);
+  const exps = logits.map(l => Math.exp(l - maxLogit));
+  const sum = exps.reduce((a, b) => a + b, 0);
+  // Retorna na mesma ordem — sem reordenar
+  return candidates.map((c, i) => ({ ...c, prob: exps[i] / sum }));
+}
+
+function sampleFromCandidates(candidates) {
+  // Sempre escolhe o token correto da sequência (índice 0 após applyTemperature
+  // já reordenou — mas o token correto é sempre candidates[0].word original).
+  // A temperatura afeta apenas as barras de probabilidade, não a escolha.
+  return candidates[0].word;
+}
+
+function renderCandidates(candidates, chosenWord) {
+  const wrap = document.getElementById('candidates');
+  wrap.innerHTML = '';
+
+  const colors = ['var(--accent)', 'var(--accent3)', 'var(--purple)', 'var(--yellow)', 'var(--muted)'];
+  const maxProb = Math.max(...candidates.map(c => c.prob));
+
+  candidates.forEach((c, i) => {
+    const row = document.createElement('div');
+    row.className = 'candidate-row';
+    const isChosen = c.word === chosenWord;
+    if (isChosen) row.classList.add('cand-chosen');
+
+    const pct = (c.prob * 100).toFixed(1);
+    const barW = (c.prob / maxProb * 100).toFixed(1);
+    const col = colors[i] || 'var(--muted)';
+
+    row.innerHTML = `
+      <div class="cand-token" style="${isChosen ? 'border-color:var(--accent);color:var(--accent)' : ''}">${c.word}</div>
+      <div class="cand-bar-wrap">
+        <div class="cand-bar" style="width:${barW}%; background:${isChosen ? 'var(--accent)' : col}">
+          ${pct > 15 ? pct + '%' : ''}
+        </div>
+      </div>
+      <span class="cand-pct" style="color:${isChosen ? 'var(--accent)' : col}">${pct}%</span>
+      ${isChosen ? '<span style="color:var(--accent);font-size:0.65rem">✓</span>' : ''}
+    `;
+    wrap.appendChild(row);
+  });
+}
+
+// ─── Geração principal ───────────────────────────────────────────────────────
+async function generate() {
+  if (!selectedPrompt || generating) return;
+  generating = true;
+  step = 0;
+
+  document.getElementById('btnGen').disabled = true;
+  document.getElementById('btnGen').textContent = '⏸ GERANDO';
+
+  const temp = parseFloat(tempSlider.value);
+  const continuations = selectedPrompt.continuations;
+
+  for (let i = 0; i < continuations.length; i++) {
+    if (!generating) break;
+    step = i + 1;
+
+    const cont = continuations[i];
+    const currentTokens = [...allTokens]; // tokens disponíveis até agora
+
+    // Aplicar temperatura nas candidatas
+    const tempAdjusted = applyTemperature(cont.candidates, temp);
+
+    // O token correto é sempre o definido na sequência (cont.token)
+    // A temperatura só redistribui as barras visuais de probabilidade
+    const chosenWord = cont.token;
+
+    // Renderizar atenção ANTES de adicionar o token
+    const attTokens = [...currentTokens];
+    const attWeights = cont.attention.slice(0, attTokens.length);
+    // Normalizar atenção
+    const attSum = attWeights.reduce((a, b) => a + b, 0);
+    const attNorm = attWeights.map(w => w / attSum);
+    renderAttention(attTokens, attNorm);
+
+    // Candidatas com temperatura aplicada
+    renderCandidates(tempAdjusted, chosenWord);
+
+    // Estatísticas
+    document.getElementById('statStep').textContent = `${step}/${continuations.length}`;
+    document.getElementById('statTopProb').textContent = (tempAdjusted[0].prob * 100).toFixed(0) + '%';
+
+    // Explainer
+    let explainText = cont.explain;
+    if (temp > 1.2) {
+      explainText += '<br><b style="color:var(--accent2)">🌡 Temperatura alta: probabilidades mais uniformes — a IA fica "indecisa" entre as opções.</b>';
+    } else if (temp < 0.4) {
+      explainText += '<br><b style="color:var(--accent3)">🧊 Temperatura baixa: probabilidade concentrada no top-1 — a IA é muito determinística.</b>';
+    } else {
+      explainText += '<br><b style="color:var(--muted)">🌡 Temperatura equilibrada: distribuição natural das probabilidades.</b>';
+    }
+    document.getElementById('explainer').innerHTML = explainText;
+
+    await sleep(getDelay() * 0.4);
+
+    // Adicionar token ao stream
+    addGeneratedToken(chosenWord);
+    document.getElementById('statGenerated').textContent = i + 1;
+
+    await sleep(getDelay() * 0.6);
+  }
+
+  // Finalizar
+  generating = false;
+  document.getElementById('btnGen').disabled = false;
+  document.getElementById('btnGen').textContent = '▶ GERAR NOVAMENTE';
+
+  // Remove cursor final
+  const cursor = document.getElementById('cursor');
+  if (cursor) cursor.remove();
+
+  document.getElementById('explainer').innerHTML =
+    `✅ Geração completa! A IA produziu <b>${continuations.length} tokens</b> usando atenção e probabilidades.<br>
+    Ajuste a <b>temperatura</b> e clique em <b>GERAR NOVAMENTE</b> para ver resultados diferentes.`;
+}
+
+function resetVisuals() {
+  generating = false;
+  step = 0;
+  allTokens = [];
+
+  document.getElementById('tokenStream').innerHTML =
+    '<span style="color:var(--muted); font-size:0.7rem">Aguardando geração...</span>';
+  document.getElementById('attGrid').innerHTML = '';
+  document.getElementById('attLabelRow').textContent = 'A IA olha para os tokens anteriores para escolher o próximo.';
+  document.getElementById('candidates').innerHTML =
+    '<div style="color:var(--muted); font-size:0.65rem">Aguardando geração...</div>';
+  document.getElementById('statTokens').textContent = '0';
+  document.getElementById('statGenerated').textContent = '0';
+  document.getElementById('statStep').textContent = '—';
+  document.getElementById('statTopProb').textContent = '—';
+  document.getElementById('explainer').innerHTML =
+    'Selecione um prompt e clique em <b>GERAR</b> para ver como a IA constrói o texto palavra por palavra.';
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ─── Botões ───────────────────────────────────────────────────────────────────
+document.getElementById('btnGen').onclick = () => {
+  if (!generating) {
+    if (step > 0) {
+      // Reiniciar mesma frase
+      resetVisuals();
+      renderPromptTokens();
+      document.getElementById('statTokens').textContent = selectedPrompt.tokens.length;
+      setTimeout(generate, 300);
+    } else {
+      generate();
+    }
+  }
+};
+
+document.getElementById('btnReset').onclick = () => {
+  generating = false;
+  setTimeout(() => {
+    if (selectedPrompt) {
+      resetVisuals();
+      renderPromptTokens();
+      document.getElementById('statTokens').textContent = selectedPrompt.tokens.length;
+      document.getElementById('btnGen').textContent = '▶ GERAR';
+      document.getElementById('explainer').innerHTML =
+        `Prompt resetado. Clique em <b>GERAR</b> para começar.`;
+    } else {
+      resetVisuals();
+      document.getElementById('btnGen').disabled = true;
+    }
+  }, 100);
+};
+</script>
+</body>
+</html>

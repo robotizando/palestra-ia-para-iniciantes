@@ -1,0 +1,31 @@
+<section id="backprop" data-transition="fade" style="background:#FFF8EE; color:#1F2A44; font-family:'Nunito Sans', Arial, sans-serif; padding:112px 128px; display:flex; flex-direction:column; gap:36px">
+<div style="display:flex; flex-direction:column; gap:16px">
+<p style="font-size:28px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:2px">Bloco 2 · A matemática por trás (3 de 4)</p>
+<h2 style="font-family:'Fredoka', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1; color:#1F2A44">Aprender = ajustar os pesos contra o erro</h2>
+</div>
+<div style="display:flex; flex-direction:row; gap:24px">
+<div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#1F2A44; border-radius:24px; padding:32px 36px">
+<p style="font-size:26px; font-weight:800; color:#F28C28; text-transform:uppercase; letter-spacing:1px">1. Gradiente</p>
+<p style="font-family:Georgia, 'Times New Roman', serif; font-size:44px; color:#FFF8EE">∂<i>L</i>/∂<i>w<sub>i</sub></i> = (<i>ŷ</i> − <i>y</i>) · <i>x<sub>i</sub></i></p>
+<p style="font-size:28px; line-height:1.4; color:#D9DEE8">Quanto o erro muda se eu mexer nesse peso. Com sigmoide + perda logística, a conta fica simples assim.</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#1F2A44; border-radius:24px; padding:32px 36px">
+<p style="font-size:26px; font-weight:800; color:#F28C28; text-transform:uppercase; letter-spacing:1px">2. Descida do gradiente</p>
+<p style="font-family:Georgia, 'Times New Roman', serif; font-size:44px; color:#FFF8EE"><i>w<sub>i</sub></i> ← <i>w<sub>i</sub></i> − <i>η</i> · (<i>ŷ</i> − <i>y</i>) · <i>x<sub>i</sub></i></p>
+<p style="font-size:28px; line-height:1.4; color:#D9DEE8">Dá um passinho (taxa <i>η</i>) no sentido que diminui o erro. Repete com milhares de exemplos.</p>
+</div>
+</div>
+<div style="display:flex; flex-direction:row; gap:24px">
+<div style="flex:1.25; display:flex; flex-direction:column; gap:10px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px; padding:28px 36px">
+<p style="font-size:26px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:1px">Um passo no bolo <span style="text-transform:none; font-family:Georgia, 'Times New Roman', serif; font-weight:400">(<i>y</i> = 1, <i>ŷ</i> = 0,38, <i>η</i> = 0,5)</span></p>
+<p style="font-family:Georgia, 'Times New Roman', serif; font-size:32px; line-height:1.4; color:#1F2A44"><i>w</i>₁: 2 → <b>2,31</b> &nbsp;·&nbsp; <i>w</i>₂: 1 → 1 (<i>x</i>₂ = 0)<br><i>w</i>₃: −3 → <b>−2,69</b> &nbsp;·&nbsp; <i>b</i>: 0,5 → <b>0,81</b></p>
+<p style="font-size:30px; color:#4A5568">Nova previsão: <i>z</i> = 0,43 → <i>ŷ</i> ≈ <b style="color:#9A4508">0,61</b>. Errou menos (antes 0,38).</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:10px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px; padding:28px 36px">
+<p style="font-size:26px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:1px">Backprop: várias camadas</p>
+<p style="font-family:Georgia, 'Times New Roman', serif; font-size:32px; color:#1F2A44"><i>δ<sub>h</sub></i> = <i>δ</i><sub>saída</sub> · <i>w<sub>h</sub></i> · <i>σ</i>(<i>z<sub>h</sub></i>)(1 − <i>σ</i>(<i>z<sub>h</sub></i>))</p>
+<p style="font-size:28px; line-height:1.4; color:#4A5568">O erro volta da saída para trás, camada por camada (regra da cadeia).</p>
+</div>
+</div>
+<aside>Treinar é achar os pesos que diminuem a perda. O gradiente diz para que lado cada peso deve andar; com sigmoide e perda logística ele fica (ŷ − y)·x. Exemplo: o bolo vendeu (y = 1), a previsão foi 0,38, então ŷ − y = −0,62. Com taxa de aprendizado 0,5: w₁ = 2 − 0,5·(−0,62)·1 = 2,31; w₂ não muda porque x₂ = 0 (essa pergunta não participou); w₃ = −3 + 0,31 = −2,69; b = 0,5 + 0,31 = 0,81. Nova soma 0,43, nova previsão 0,61: um passo e já errou menos. Numa rede com camadas escondidas (a do simulador), o erro da saída é repartido para trás: cada bolinha escondida recebe uma parte proporcional ao peso que a liga à saída, multiplicada pela derivada da sigmoide. Isso é o backpropagation. Em seguida vêm as demonstrações: primeiro as bolinhas do bolo, depois o simulador.</aside>
+</section>

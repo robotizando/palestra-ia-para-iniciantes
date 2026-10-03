@@ -1,0 +1,53 @@
+<section id="embedding" data-transition="fade" style="background:#FFF8EE; color:#1F2A44; font-family:'Nunito Sans', Arial, sans-serif; padding:96px 128px; display:flex; flex-direction:column; gap:32px">
+<div style="display:flex; flex-direction:column; gap:12px">
+<p style="font-size:28px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:2px">Bloco 3 · Para esticar a conversa</p>
+<h2 style="font-family:'Fredoka', Arial, sans-serif; font-size:64px; font-weight:600; line-height:1.1; color:#1F2A44">Embedding: cada token ganha um endereço</h2>
+</div>
+<div style="display:flex; flex-direction:row; gap:48px; align-items:center; flex:1">
+<div style="position:relative; width:780px; height:600px; flex:none; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px">
+<svg aria-label="Mapa de significados: comidas perto umas das outras, veículos em outro canto, e a seta de homem para mulher igual à seta de rei para rainha" viewBox="0 0 780 600" width="780" height="600" style="position:absolute; left:0px; top:0px; width:780px; height:600px">
+<defs><marker id="seta-emb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9A4508"/></marker></defs>
+<g stroke="#EFD9B8" stroke-width="2">
+<line x1="60" y1="300" x2="720" y2="300"/>
+<line x1="380" y1="40" x2="380" y2="560"/>
+</g>
+<ellipse cx="636" cy="146" rx="112" ry="80" fill="#F28C28" opacity="0.12"/>
+<ellipse cx="604" cy="426" rx="90" ry="56" fill="#5B7DB1" opacity="0.12"/>
+<line x1="124" y1="252" x2="124" y2="340" stroke="#9A4508" stroke-width="4" stroke-dasharray="8 6" marker-end="url(#seta-emb)"/>
+<line x1="284" y1="180" x2="284" y2="268" stroke="#9A4508" stroke-width="4" stroke-dasharray="8 6" marker-end="url(#seta-emb)"/>
+<g fill="#F28C28"><circle cx="668" cy="132" r="12"/><circle cx="636" cy="108" r="12"/><circle cx="588" cy="192" r="12"/></g>
+<g fill="#5B7DB1"><circle cx="572" cy="444" r="12"/><circle cx="636" cy="408" r="12"/></g>
+<g fill="#1F2A44"><circle cx="284" cy="180" r="12"/><circle cx="284" cy="276" r="12"/><circle cx="124" cy="252" r="12"/><circle cx="124" cy="348" r="12"/></g>
+<g font-family="'Nunito Sans', Arial, sans-serif" font-size="26" font-weight="700" fill="#1F2A44">
+<text x="684" y="141">bolo</text>
+<text x="530" y="100">torta</text>
+<text x="440" y="200">brigadeiro</text>
+<text x="470" y="474">carro</text>
+<text x="652" y="400">moto</text>
+<text x="302" y="189">rei</text>
+<text x="302" y="285">rainha</text>
+<text x="142" y="244">homem</text>
+<text x="142" y="372">mulher</text>
+</g>
+<text x="40" y="580" font-family="'Nunito Sans', Arial, sans-serif" font-size="22" fill="#4A5568">Mapa com 2 números por token (os de verdade têm milhares)</text>
+</svg>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:20px">
+<div style="display:flex; flex-direction:column; gap:10px; background:#1F2A44; border-radius:24px; padding:26px 32px">
+<p style="font-size:24px; font-weight:800; color:#F28C28; text-transform:uppercase; letter-spacing:1px">1. O número vira uma lista de números</p>
+<p style="font-family:Georgia, 'Times New Roman', serif; font-size:30px; line-height:1.45; color:#FFF8EE">“bolo” → 4821 → [0,9; 0,7; …]</p>
+<p style="font-size:26px; line-height:1.4; color:#D9DEE8">Essa lista é aprendida no treino. Palavras que aparecem em frases parecidas ficam perto no mapa.</p>
+</div>
+<div style="display:flex; flex-direction:column; gap:10px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px; padding:26px 32px">
+<p style="font-size:24px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:1px">2. Parecido = perto (cosseno)</p>
+<p style="font-family:Georgia, 'Times New Roman', serif; font-size:30px; line-height:1.45; color:#1F2A44">cos(<i>a</i>, <i>b</i>) = (<i>a</i> · <i>b</i>) / (|<i>a</i>| |<i>b</i>|)</p>
+<p style="font-family:Georgia, 'Times New Roman', serif; font-size:27px; line-height:1.5; color:#1F2A44">bolo × torta = 1,28 / (1,14 · 1,13) ≈ <b style="color:#9A4508">0,99</b><br>bolo × carro = 0,12 / (1,14 · 0,85) ≈ <b style="color:#5B7DB1">0,12</b></p>
+</div>
+<div style="display:flex; flex-direction:column; gap:10px; background:#FFFDF9; border:2px solid #EFD9B8; border-radius:24px; padding:26px 32px">
+<p style="font-size:24px; font-weight:800; color:#9A4508; text-transform:uppercase; letter-spacing:1px">3. Dá até para fazer conta com sentido</p>
+<p style="font-family:Georgia, 'Times New Roman', serif; font-size:30px; color:#1F2A44">rei − homem + mulher ≈ <b>rainha</b></p>
+</div>
+</div>
+</div>
+<aside>Opcional, para quem quiser ir além do token. Depois de virar número (o ID do dicionário), cada token vira uma lista de números, o embedding. No mapa do slide cada palavra tem só 2 números para caber no desenho; nos modelos de verdade são centenas ou milhares por token. Essa lista não é escrita à mão: é aprendida no treino, e palavras usadas em frases parecidas acabam perto umas das outras (comidas num canto, veículos em outro). Para medir se duas palavras são parecidas, usa-se o cosseno do ângulo entre as listas: perto de 1 é muito parecido, perto de 0 não tem nada a ver. Conta do exemplo: bolo = (0,9; 0,7) e torta = (0,8; 0,8): 0,9·0,8 + 0,7·0,8 = 1,28; os tamanhos são 1,14 e 1,13; cosseno ≈ 0,99. Bolo e carro = (0,6; −0,6): 0,54 − 0,42 = 0,12; cosseno ≈ 0,12. A seta de homem para mulher é igual à de rei para rainha, por isso rei − homem + mulher cai em rainha (no mapa: (−0,3; 0,5) − (−0,8; 0,2) + (−0,8; −0,2) = (−0,3; 0,1)). Nos modelos reais isso funciona de forma aproximada, não exata. Ligação com parâmetros: um dicionário de 100 mil tokens com 4.096 números cada já são uns 410 milhões de parâmetros, só nessa tabela. Uso no dia a dia: é assim que os Projetos do Claude e as buscas "por significado" acham o trecho certo de um documento, mesmo sem a palavra exata.</aside>
+</section>
