@@ -102,3 +102,16 @@ x-shape[kind="line"] { background: none !important; border-top-style: solid; bor
 }
 .notas .contador { font-size: 20px; color: #D9DEE8; }
 .notas .fim { display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; background: #000; color: #D9DEE8; font-size: 22px; }
+
+/* ---------- Impressão (PDF): "?imprimir" no endereço, um slide por página ---------- */
+
+@page { size: 1920px 1080px; margin: 0; }
+html.modo-imprimir, body.modo-imprimir {
+  height: auto; overflow: visible; background: #FFF8EE;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.modo-imprimir .tela { position: static; height: auto; transform: none; }
+.modo-imprimir .tela > section {
+  position: relative !important; opacity: 1; visibility: visible; transition: none;
+  break-after: page; break-inside: avoid;
+}

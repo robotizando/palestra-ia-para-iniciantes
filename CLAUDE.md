@@ -26,6 +26,7 @@ Preparar uma oficina (workshop) de IA para iniciantes, com uma apresentação em
 | `oficina-ia/apresentacao/slides/*.html` | Um fragmento HTML por slide (`<section>` com notas do apresentador em `<aside>`). |
 | `oficina-ia/apresentacao/player/` | Player local que mostra esses slides sem o claude.ai e sem internet (fontes e ícones guardados no repositório). |
 | `oficina-ia/apresentacao/apresentar.sh` | Sobe um servidor local (servindo `oficina-ia/` inteira) e abre o player no navegador. |
+| `oficina-ia/apresentacao/gerar-pdf.sh` | Gera `oficina-ia/apresentacao/pdf/oficina-ia.pdf`, um slide por página, a partir do player local (Chrome sem janela). |
 | `oficina-ia/programas/` | Programas de demonstração: `mlp_visualizer.html`, `llm_visualizer.html` e `tokens_visualizer.html` (do Daniel) e `bolinhas.html` (versão sem matemática feita pelo Claude). `tela-cheia.html?p=<programa>.html` mostra um deles em tela cheia sem alterar o arquivo. |
 | `oficina-ia/exemplos/` | Arquivos para os exercícios. `faturamento-laboratorio.pdf` é o PDF **fictício** do exercício 1 (laboratório inventado, 26 lançamentos de setembro/2026, entradas e saídas misturadas), gerado por `gerar_faturamento.py` (reportlab). Substitui o PDF real enquanto ele não chega. `faturas-clientes.pdf` é o segundo exemplo (slide `exercicio1-faturas`): 25 páginas, uma fatura de cliente fictício por página, laboratório veterinário, gerado por `gerar_faturas.py` com sorteio de semente fixa (25 faturas, 90 itens, soma R$ 29.978,00). Os prompts testados pelo Daniel ficam nas notas dos dois slides. |
 
@@ -43,6 +44,7 @@ Preparar uma oficina (workshop) de IA para iniciantes, com uma apresentação em
 - Links (`<a href>`) nos slides são relativos à pasta `apresentacao/` e abrem em outra aba. Os slides `bolinhas-demo`, `mlp-demo`, `token-demo` e `llm-demo` usam isso para abrir os programas de `programas/` via `tela-cheia.html` (o navegador exige um toque na aba nova para entrar em tela cheia; Ctrl+W volta aos slides). Esses links só funcionam no player local: os programas não estão publicados no Artifact do claude.ai.
 - Vídeo: `<video src="../exemplos/arquivo.mp4" controls>` no slide (caminho relativo a `apresentacao/`, como os links). Clicar no vídeo toca e pausa sem trocar de slide, e ele para sozinho ao sair do slide. Usado em `video-exemplos`, com `exemplos/exemplo-video1.mp4` (10 s) e `exemplo-video2.mp4` (30 s), postos pelo Daniel. Só funciona no player local: os vídeos não estão publicados no Artifact.
 - Para tirar um slide da apresentação (por exemplo `bolinhas-demo`), coloque `hidden` na `<section>`: o player pula.
+- PDF: rode `oficina-ia/apresentacao/gerar-pdf.sh [arquivo-de-saida]` depois de editar os slides. Ele abre o player em modo `?imprimir` (todos os slides, um por página de 1920 × 1080) no Google Chrome ou Chromium sem janela. Slides com `hidden` ficam de fora, as notas do apresentador não entram e cada vídeo vira um quadro parado (o de 1 s, tirado com o ffmpeg; sem ffmpeg, um retângulo com um play). Links para os programas não funcionam no PDF. O PDF não se atualiza sozinho.
 
 ## Ordem dos slides
 

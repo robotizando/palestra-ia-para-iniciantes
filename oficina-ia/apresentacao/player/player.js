@@ -2,6 +2,7 @@
 // Lê ../deck.json e ../slides/<id>.html e mostra cada <section> numa tela de 1920×1080.
 // Abra com ../apresentar.sh (o navegador não deixa ler arquivos locais por file://).
 // Com "?notas" no endereço, vira a janela de notas do apresentador.
+// Com "?imprimir", mostra todos os slides um embaixo do outro, um por página (usado pelo ../gerar-pdf.sh).
 
 (function () {
   'use strict';
@@ -11,6 +12,7 @@
   const ALTURA = 1080;
   const canal = 'BroadcastChannel' in window ? new BroadcastChannel('oficina-ia-slides') : null;
   const ehNotas = new URLSearchParams(location.search).has('notas');
+  const ehImpressao = new URLSearchParams(location.search).has('imprimir');
 
   // ---------- Elementos do formato ----------
 
@@ -371,10 +373,51 @@
     if (canal) canal.postMessage({ tipo: 'qual' });
   }
 
+  // ---------- Impressão (PDF) ----------
+
+  // Vídeo não toca no papel: troca cada um por um quadro parado, que o gerar-pdf.sh
+  // tira com o ffmpeg e deixa em ../.quadros-pdf/<nome do vídeo>.jpg enquanto roda.
+  // Sem o quadro (ou imprimindo pelo navegador), fica um retângulo com um triângulo de play.
+  function congelarVideo(video) {
+    const estilo = video.getAttribute('style') || '';
+    const nome = (video.getAttribute('src') || '').split('/').pop().replace(/\.[^.]*$/, '');
+    return new Promise((resolver) => {
+      const quadro = new Image();
+      quadro.setAttribute('style', estilo + '; object-fit:contain');
+      quadro.onload = () => { video.replaceWith(quadro); resolver(); };
+      quadro.onerror = () => {
+        const caixa = document.createElement('div');
+        caixa.setAttribute('style', estilo + '; display:flex; align-items:center; justify-content:center');
+        caixa.innerHTML = '<svg viewBox="0 0 100 100" width="120" height="120"><circle cx="50" cy="50" r="48" fill="#F28C28"/><path d="M40 28 L74 50 L40 72 Z" fill="#FFF8EE"/></svg>';
+        video.replaceWith(caixa);
+        resolver();
+      };
+      quadro.src = BASE + '.quadros-pdf/' + encodeURIComponent(nome) + '.jpg';
+    });
+  }
+
+  function iniciarImpressao(deck) {
+    const { slides } = deck;
+    document.title = deck.titulo;
+    document.documentElement.classList.add('modo-imprimir');
+    document.body.className = 'modo-imprimir';
+    const app = document.getElementById('app');
+    app.innerHTML = '';
+    const tela = document.createElement('div');
+    tela.className = 'tela';
+    slides.forEach((s) => tela.appendChild(s.secao));
+    app.appendChild(tela);
+
+    const esperas = Array.from(tela.querySelectorAll('video')).map(congelarVideo);
+    esperas.push(document.fonts.ready);
+    // O gerar-pdf.sh não olha este aviso (imprime por tempo); serve para conferir no navegador.
+    Promise.all(esperas).then(() => { document.documentElement.dataset.pronto = '1'; });
+  }
+
   // ---------- Início ----------
 
   carregarDeck()
-    .then((deck) => (ehNotas ? iniciarNotas : iniciarApresentacao)(deck))
+    .then((deck) => (ehNotas ? iniciarNotas : ehImpressao ? iniciarImpressao : iniciarApresentacao)(deck))
     .catch((erro) => {
       console.error(erro);
       const local = location.protocol === 'file:';
